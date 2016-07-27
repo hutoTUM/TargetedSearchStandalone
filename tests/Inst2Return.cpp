@@ -88,4 +88,9 @@ TEST_CASE(
     Inst2ReturnSearcher s(prepareTestCase("bin/divisible.bc", "main"));
     CHECK(s.searchForMinimalDistance() == 20);
   }
+
+  SUBCASE("Control Flow Graph cannot be sorted topologically") {
+    Inst2ReturnSearcher s(prepareTestCase("bin/doomcircle.bc", "main"));
+    CHECK(s.searchForMinimalDistance() == 12);
+  }
 }

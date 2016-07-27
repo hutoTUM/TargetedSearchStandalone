@@ -15,16 +15,24 @@ bool BFSearchState::doesIntroduceRecursion() {
     return false;
   }
 
-  // Copy the stack
+  // Copy the stack and remove first entry
   std::stack<BFStackEntry> stackCopy(this->stack);
   BFStackEntry last = stackCopy.top();
   stackCopy.pop();
 
+  // Extract the function called by the last stack entry
+  llvm::CallInst* lastcall = llvm::cast<llvm::CallInst>(last.call);
+  llvm::Function* lastcalled = lastcall->getCalledFunction();
+
   // check if last call in the stack exists twice
   while (!stackCopy.empty()) {
     BFStackEntry probe = stackCopy.top();
-    // TODO compare called function, not call instruction
-    if (last.call == probe.call) {
+
+    // Extract the function called by the current stack entry
+    llvm::CallInst* probecall = llvm::cast<llvm::CallInst>(probe.call);
+    llvm::Function* probecalled = probecall->getCalledFunction();
+
+    if (lastcalled == probecalled) {
       return true;
     }
     stackCopy.pop();

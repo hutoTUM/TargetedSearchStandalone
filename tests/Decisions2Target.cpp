@@ -44,3 +44,15 @@ TEST_CASE("Count the minimal number of decisions to target function call") {
     CHECK(executeSearchRun("bin/branches.bc", "quarter", "catchme") == 2);
   }
 }
+
+TEST_CASE("Detects, if the target is not reachable at all") {
+  SUBCASE("One block with no call to target function") {
+    CHECK(executeSearchRun("bin/nocall.bc", "main", "catchme") == -1);
+  }
+
+  SUBCASE("Lower function cannot reach higher functions") {
+    CHECK(executeSearchRun("bin/divisible.bc", "divby2", "divby5") == -1);
+    CHECK(executeSearchRun("bin/divisible.bc", "divby6", "divby10") == -1);
+    CHECK(executeSearchRun("bin/divisible.bc", "divby30", "main") == -1);
+  }
+}

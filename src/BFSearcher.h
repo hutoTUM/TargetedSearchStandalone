@@ -70,9 +70,10 @@ class BFSearcher {
   static const uint maxDistance = 1e5;
   static const uint maxIterations = 1e7;
   static const uint maxQueueLength = 1e4;
-  uint iterationCounter = 0;
 
  public:
+  uint iterationCounter = 0;
+
   explicit BFSearcher(llvm::Instruction* start);
 
   /**
