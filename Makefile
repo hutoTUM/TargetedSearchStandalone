@@ -31,6 +31,10 @@ bin/search: $(OBJS) bin/main.o
 test: bin/testsuite $(EXAOS)
 	./bin/testsuite
 
+.PHONY: valgrind
+test: bin/testsuite $(EXAOS)
+	valgrind ./bin/testsuite
+
 bin/testsuite: external/doctest.h $(OBJS) $(TSTOS)
 	$(CXX) $(CXXFLAGS_LLVM) -o $@ $^ $(LLVM_CONFIG_COMMAND) -fexceptions
 

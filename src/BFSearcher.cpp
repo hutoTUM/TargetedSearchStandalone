@@ -122,11 +122,13 @@ void BFSearcher::doSingleSearchIteration() {
 
     // Check, if we have any point to return to
     if (!curr.stack.empty()) {
-      // Remove the last call from the stack
+      // Extract the top stack frame
+      BFStackEntry gobackto = curr.stack.top();
+      // and remove it from the stack
       curr.stack.pop();
 
       // Add everything to the search queue
-      enqueueInSearchQueue(curr, ++(curr.stack.top().call), curr.stack);
+      enqueueInSearchQueue(curr, ++(gobackto.call), curr.stack);
     }
 
   } else if (llvm::isa<llvm::TerminatorInst>(curr.instruction)) {
