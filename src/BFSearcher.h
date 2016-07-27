@@ -3,7 +3,9 @@
 
 #include <deque>
 #include <queue>
+#include <set>
 #include <stack>
+#include <utility>
 #include <vector>
 #include "./helper.h"
 #include "llvm/IR/BasicBlock.h"
@@ -17,10 +19,15 @@
  */
 class BFStackEntry {
  public:
+  llvm::BasicBlock::iterator call;
   explicit BFStackEntry(llvm::BasicBlock::iterator _call)
       : call(_call) { /* empty */
   }
-  llvm::BasicBlock::iterator call;
+
+  friend bool operator<(const BFStackEntry& l, const BFStackEntry& r) {
+    // Very strange way for comparison, but there are no alternatives ...
+    return &*l.call < &*r.call;
+  }
 };
 
 /**
@@ -74,11 +81,18 @@ class BFSearcher {
                       std::greater<BFSearchState> >
       searchqueue;
 
+  // This data structure is ugly as hell, but is there any better way?
+  std::set<std::pair<llvm::Instruction*, std::stack<BFStackEntry> > >
+      duplicateFilter;
+
   // Some variables to avoid extreme long search runs
   static const uint maxDistance = 1e5;
   static const uint maxIterations = 1e7;
   static const uint maxQueueLength = 1e4;
 
+  /**
+   * Add the state to search queue, if some sanity checks are passed
+   */
   void addToSearchQueue(BFSearchState state);
 
   /**
@@ -93,6 +107,16 @@ class BFSearcher {
    * Get and remove the next entry from the search queue
    */
   BFSearchState popFromSeachQueue();
+
+  /**
+   * Check, if the given state was added earlier to the search queue
+   */
+  bool wasAddedEarlier(BFSearchState state);
+
+  /**
+   * Store a state for a later wasAddedEarlier check
+   */
+  void rememberAsAdded(BFSearchState state);
 
   /**
    * Do one step in the search. Select the next state and add all its

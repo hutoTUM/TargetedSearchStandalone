@@ -63,9 +63,10 @@ uint BFSearcher::searchForMinimalDistance() {
 }
 
 void BFSearcher::addToSearchQueue(BFSearchState state) {
-  // TODO do not add the same state twice
-  if (!state.doesIntroduceRecursion() && searchqueue.size() <= maxQueueLength) {
+  if (!state.doesIntroduceRecursion() && !wasAddedEarlier(state) &&
+      searchqueue.size() <= maxQueueLength) {
     searchqueue.push(state);
+    this->rememberAsAdded(state);
   }
 }
 
@@ -81,6 +82,21 @@ BFSearchState BFSearcher::popFromSeachQueue() {
   BFSearchState result = searchqueue.top();
   searchqueue.pop();
   return result;
+}
+
+bool BFSearcher::wasAddedEarlier(BFSearchState state) {
+  // Only lookup states, that are the first in their basic block
+  if (&(state.instruction->getParent()->front()) == &*state.instruction) {
+    return duplicateFilter.count(std::make_pair(&*state.instruction, state.stack));
+  }
+  return false;
+}
+
+void BFSearcher::rememberAsAdded(BFSearchState state) {
+  // Only store instructions, that are the first in their basic block
+  if (&(state.instruction->getParent()->front()) == &*state.instruction) {
+    duplicateFilter.insert(std::make_pair(&*state.instruction, state.stack));
+  }
 }
 
 void BFSearcher::doSingleSearchIteration() {
