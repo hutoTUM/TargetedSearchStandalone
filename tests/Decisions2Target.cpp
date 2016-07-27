@@ -54,3 +54,9 @@ TEST_CASE("Detects, if the target is not reachable at all") {
     CHECK(executeSearchRun("bin/divisible.bc", "divby30", "main") == -1);
   }
 }
+
+TEST_CASE("Complicated pathes") {
+  SUBCASE("Return is better than directly hit the target") {
+    CHECK(executeSearchRun("bin/cheapreturn.bc", "start", "catchme") == 1);
+  }
+}
