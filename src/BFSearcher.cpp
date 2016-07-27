@@ -1,6 +1,5 @@
 #include "./BFSearcher.h"
 #include <deque>
-#include <iostream>  // TODO remove
 #include <stack>
 #include "./helper.h"
 #include "llvm/IR/BasicBlock.h"

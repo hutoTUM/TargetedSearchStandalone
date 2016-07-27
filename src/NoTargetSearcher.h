@@ -12,11 +12,6 @@ class NoTargetSearcher : public BFSearcher {
   static const uint maxIterations = 1e4;
   static const uint maxQueueLength = 1e4;
 
- public:
-  explicit NoTargetSearcher(llvm::Instruction* start)
-      : BFSearcher(start) { /* empty */
-  }
-
   /**
    * True, iff state is a return instruction with empty stack
    */
@@ -26,6 +21,11 @@ class NoTargetSearcher : public BFSearcher {
    * Count all instruction with distance 1
    */
   bool doesIncrementDistance(llvm::Instruction* instr);
+
+ public:
+  explicit NoTargetSearcher(llvm::Instruction* start)
+      : BFSearcher(start) { /* empty */
+  }
 };
 
 #endif  // NOTARGETSEARCHER_H_

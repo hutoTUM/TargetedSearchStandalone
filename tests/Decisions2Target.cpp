@@ -7,9 +7,8 @@
 #include "llvm/IRReader/IRReader.h"
 #include "llvm/Support/SourceMgr.h"
 
-uint executeSearchRun(std::string filename,
-                                   std::string entryfunction,
-                                   std::string targetfunction) {
+uint executeSearchRun(std::string filename, std::string entryfunction,
+                      std::string targetfunction) {
   llvm::SMDiagnostic Err;
   llvm::Module* module =
       llvm::ParseIRFile(filename, Err, llvm::getGlobalContext());
@@ -27,7 +26,6 @@ uint executeSearchRun(std::string filename,
 
 
 TEST_CASE("Count the minimal number of decisions to target function call") {
-
   SUBCASE("Target function is in the same block") {
     CHECK(executeSearchRun("bin/flat.bc", "flat", "catchme") == 0);
   }

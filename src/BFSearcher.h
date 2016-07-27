@@ -52,9 +52,6 @@ class BFSearchState {
   bool doesIntroduceRecursion();
 };
 
-// TODO make some of the public methods private
-// TODO reflect this changes also in the inherited classes
-
 /**
  * Breadth first search strategy traversing the whole llvm bitcode looking
  * for the shortest distance to a target. Functions for counting the distance
@@ -70,17 +67,6 @@ class BFSearcher {
   static const uint maxDistance = 1e5;
   static const uint maxIterations = 1e7;
   static const uint maxQueueLength = 1e4;
-
- public:
-  uint iterationCounter = 0;
-
-  explicit BFSearcher(llvm::Instruction* start);
-
-  /**
-   * Runs a search for the minimal distance to the target. If the target is
-   * reachable, it returns the distance to it. Otherwise -1 is returned.
-   */
-  uint searchForMinimalDistance();
 
   // TODO merge - depends on priority queue
   void appendToSearchQueue(BFSearchState state);
@@ -118,6 +104,17 @@ class BFSearcher {
    */
   // TODO should return uint not bool - requires switch to priority queue
   virtual bool doesIncrementDistance(llvm::Instruction* instr) = 0;
+
+ public:
+  uint iterationCounter = 0;
+
+  explicit BFSearcher(llvm::Instruction* start);
+
+  /**
+   * Runs a search for the minimal distance to the target. If the target is
+   * reachable, it returns the distance to it. Otherwise -1 is returned.
+   */
+  uint searchForMinimalDistance();
 };
 
 #endif  // BFSEARCHER_H_

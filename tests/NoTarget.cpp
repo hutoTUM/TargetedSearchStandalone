@@ -7,8 +7,7 @@
 #include "llvm/IRReader/IRReader.h"
 #include "llvm/Support/SourceMgr.h"
 
-uint getIterationsInSearch(std::string filename,
-                                   std::string entryfunction) {
+uint getIterationsInSearch(std::string filename, std::string entryfunction) {
   llvm::SMDiagnostic Err;
   llvm::Module* module =
       llvm::ParseIRFile(filename, Err, llvm::getGlobalContext());

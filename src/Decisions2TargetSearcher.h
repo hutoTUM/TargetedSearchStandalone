@@ -9,12 +9,6 @@ class Decisions2TargetSearcher : public BFSearcher {
   std::string targetFunctionName;
   static const uint maxDistance = 1e2;
 
- public:
-  Decisions2TargetSearcher(llvm::Instruction* start,
-                           std::string _targetFunctionName)
-      : BFSearcher(start), targetFunctionName(_targetFunctionName) { /* empty */
-  }
-
   /**
    * True, iff it is a call to our target function
    */
@@ -25,6 +19,12 @@ class Decisions2TargetSearcher : public BFSearcher {
    * instructions are all terminator instructions with more than one successor.
    */
   bool doesIncrementDistance(llvm::Instruction* instr);
+
+ public:
+  Decisions2TargetSearcher(llvm::Instruction* start,
+                           std::string _targetFunctionName)
+      : BFSearcher(start), targetFunctionName(_targetFunctionName) { /* empty */
+  }
 };
 
 #endif  // DECISIONS2TARGETSEARCHER_H_
