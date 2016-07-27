@@ -87,7 +87,8 @@ BFSearchState BFSearcher::popFromSeachQueue() {
 bool BFSearcher::wasAddedEarlier(BFSearchState state) {
   // Only lookup states, that are the first in their basic block
   if (&(state.instruction->getParent()->front()) == &*state.instruction) {
-    return duplicateFilter.count(std::make_pair(&*state.instruction, state.stack));
+    return duplicateFilter.count(
+        std::make_pair(&*state.instruction, state.stack));
   }
   return false;
 }
