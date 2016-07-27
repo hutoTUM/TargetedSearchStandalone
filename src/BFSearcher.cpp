@@ -94,7 +94,7 @@ void BFSearcher::doSingleSearchIteration() {
   BFSearchState curr = this->popFromSeachQueue();
 
   // nullptr indicates an invalid instruction
-  assert(&*curr->instruction != NULL);
+  assert(&*curr.instruction != NULL);
 
   if (llvm::isa<llvm::CallInst>(curr.instruction)) {
     // If call, increase stack and add to search queue
@@ -114,7 +114,7 @@ void BFSearcher::doSingleSearchIteration() {
       enqueueInSearchQueue(curr, called->front().begin(), curr.stack);
     } else {
       // Just skip the called function and treat it as an normal instruction
-      enqueueInSearchQueue(curr, ++(curr.instruction), curr.stack);
+      enqueueInSearchQueue(curr, (++(curr.instruction))--, curr.stack);
     }
 
   } else if (llvm::isa<llvm::ReturnInst>(curr.instruction)) {
@@ -147,6 +147,6 @@ void BFSearcher::doSingleSearchIteration() {
 
   } else {
     // All other instructions just add their successor
-    enqueueInSearchQueue(curr, ++(curr.instruction), curr.stack);
+    enqueueInSearchQueue(curr, (++(curr.instruction))--, curr.stack);
   }
 }

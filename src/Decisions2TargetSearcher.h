@@ -4,7 +4,7 @@
 #include <string>
 #include "./BFSearcher.h"
 
-class Decisions2TargetSearcher : BFSearcher {
+class Decisions2TargetSearcher : public BFSearcher {
  private:
   std::string targetFunctionName;
   static const uint maxDistance = 1e2;

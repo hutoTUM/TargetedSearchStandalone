@@ -32,7 +32,7 @@ test: bin/testsuite $(EXAOS)
 	./bin/testsuite
 
 .PHONY: valgrind
-test: bin/testsuite $(EXAOS)
+valgrind: bin/testsuite $(EXAOS)
 	valgrind ./bin/testsuite
 
 bin/testsuite: external/doctest.h $(OBJS) $(TSTOS)
