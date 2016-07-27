@@ -1,28 +1,23 @@
 #ifndef INST2RETURNSEARCHER_H_
 #define INST2RETURNSEARCHER_H_
 
+#include <stack>
 #include <string>
 #include "./BFSearcher.h"
 
-class Inst2ReturnSearcher : BFSearcher {
- private:
-  std::string targetFunctionName;
-  static const uint maxDistance = 1e2;
-
+class Inst2ReturnSearcher : public BFSearcher {
  public:
-  Inst2ReturnSearcher(llvm::Instruction* start,
-                           std::string _targetFunctionName)
-      : BFSearcher(start), targetFunctionName(_targetFunctionName) { /* empty */
+  explicit Inst2ReturnSearcher(llvm::Instruction* start)
+      : BFSearcher(start) { /* empty */
   }
 
   /**
-   * True, iff it is a call to our target function
+   * True, iff state is a return instruction with empty stack
    */
   bool isTheTarget(BFSearchState state);
 
   /**
-   * Only instructions causing a branching decision increase distance. These
-   * instructions are all terminator instructions with more than one successor.
+   * Count all instruction with distance 1
    */
   bool doesIncrementDistance(llvm::Instruction* instr);
 };

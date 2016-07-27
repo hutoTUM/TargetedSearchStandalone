@@ -1,12 +1,20 @@
 #include "./BFSearcher.h"
 #include <deque>
+#include <iostream>  // TODO remove
 #include <stack>
 #include "./helper.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Instructions.h"
+#include "llvm/Support/CFG.h"
+
 
 bool BFSearchState::doesIntroduceRecursion() {
+  // Empty stacks do not contain recursions
+  if (this->stack.empty()) {
+    return false;
+  }
+
   // Copy the stack
   std::stack<BFStackEntry> stackCopy(this->stack);
   BFStackEntry last = stackCopy.top();
@@ -26,7 +34,13 @@ bool BFSearchState::doesIntroduceRecursion() {
   return false;
 }
 
-uint BFSearcher::SearchForMinimalDistance() {
+
+BFSearcher::BFSearcher(llvm::Instruction* start) {
+  // Add the start instruction to the search queue with 0 distance so far
+  appendToSearchQueue(BFSearchState(getIteratorOnInstruction(start), 0));
+}
+
+uint BFSearcher::searchForMinimalDistance() {
   while (!searchqueue.empty() &&
          searchqueue.front().distanceFromStart < maxDistance &&
          iterationCounter < maxIterations) {
@@ -43,14 +57,14 @@ uint BFSearcher::SearchForMinimalDistance() {
 
 void BFSearcher::appendToSearchQueue(BFSearchState state) {
   // TODO do not add the same state twice
-  if (!state.doesIntroduceRecursion()) {
+  if (!state.doesIntroduceRecursion() && searchqueue.size() <= maxQueueLength) {
     searchqueue.push_back(state);
   }
 }
 
 void BFSearcher::prependToSearchQueue(BFSearchState state) {
   // TODO do not add the same state twice
-  if (!state.doesIntroduceRecursion()) {
+  if (!state.doesIntroduceRecursion() && searchqueue.size() <= maxQueueLength) {
     searchqueue.push_front(state);
   }
 }
@@ -79,18 +93,29 @@ void BFSearcher::doSingleSearchIteration() {
   // Remove the first state from the queue
   BFSearchState curr = this->popFromSeachQueue();
 
+  // nullptr indicates an invalid instruction
+  assert(&*curr->instruction != NULL);
+
   if (llvm::isa<llvm::CallInst>(curr.instruction)) {
     // If call, increase stack and add to search queue
-
-    // Add the current call instruction to the stack
-    curr.stack.push(BFStackEntry(curr.instruction));
 
     // Extract the called function
     llvm::CallInst* call = llvm::cast<llvm::CallInst>(curr.instruction);
     llvm::Function* called = call->getCalledFunction();
 
-    // Add everything to the search queue
-    enqueueInSearchQueue(curr, called->front().begin(), curr.stack);
+    // Check if the function is an external call
+    if (called && !called->isIntrinsic() && !called->empty()) {
+      // It is a call to an defined function
+
+      // Add the current call instruction to the stack
+      curr.stack.push(BFStackEntry(curr.instruction));
+
+      // Add everything to the search queue
+      enqueueInSearchQueue(curr, called->front().begin(), curr.stack);
+    } else {
+      // Just skip the called function and treat it as an normal instruction
+      enqueueInSearchQueue(curr, ++(curr.instruction), curr.stack);
+    }
 
   } else if (llvm::isa<llvm::ReturnInst>(curr.instruction)) {
     // If return, add last entry from stack
@@ -107,13 +132,15 @@ void BFSearcher::doSingleSearchIteration() {
   } else if (llvm::isa<llvm::TerminatorInst>(curr.instruction)) {
     // If terminal instruction, add all successor
 
-    // Get it as an terminator instruction
-    llvm::TerminatorInst* term =
-        llvm::cast<llvm::TerminatorInst>(&curr.instruction);
+    // Get access to the current block
+    llvm::BasicBlock* currblock = curr.instruction->getParent();
 
     // Iterate over all the successors
-    for (uint i = 0; i < term->getNumSuccessors(); i++) {
-      enqueueInSearchQueue(curr, term->getSuccessor(i)->begin(), curr.stack);
+    for (llvm::succ_iterator sit = llvm::succ_begin(currblock),
+                             et = llvm::succ_end(currblock);
+         sit != et; sit++) {
+      // And add their first instruction to the search queue
+      enqueueInSearchQueue(curr, sit->begin(), curr.stack);
     }
 
   } else {

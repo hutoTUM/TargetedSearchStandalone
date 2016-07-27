@@ -18,6 +18,7 @@ bool Decisions2TargetSearcher::doesIncrementDistance(llvm::Instruction* instr) {
     // Get it as an terminator instruction
     llvm::TerminatorInst* term = llvm::cast<llvm::TerminatorInst>(&instr);
     // Check, if have more than one successor
+    // TODO getNumSuccessors might not work here ;(
     return term->getNumSuccessors() > 1;
   }
   return false;
