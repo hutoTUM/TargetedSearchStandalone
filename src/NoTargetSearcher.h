@@ -20,7 +20,7 @@ class NoTargetSearcher : public BFSearcher {
   /**
    * Count all instruction with distance 1
    */
-  bool doesIncrementDistance(llvm::Instruction* instr);
+  uint distanceToPass(llvm::Instruction* instr);
 
  public:
   explicit NoTargetSearcher(llvm::Instruction* start)

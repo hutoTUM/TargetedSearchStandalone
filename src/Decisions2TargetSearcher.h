@@ -15,10 +15,10 @@ class Decisions2TargetSearcher : public BFSearcher {
   bool isTheTarget(BFSearchState state);
 
   /**
-   * Only instructions causing a branching decision increase distance. These
-   * instructions are all terminator instructions with more than one successor.
+   * Only instructions causing a branching decision increase distance by 1.
+   * These instructions are all terminators with more than one successor.
    */
-  bool doesIncrementDistance(llvm::Instruction* instr);
+  uint distanceToPass(llvm::Instruction* instr);
 
  public:
   Decisions2TargetSearcher(llvm::Instruction* start,

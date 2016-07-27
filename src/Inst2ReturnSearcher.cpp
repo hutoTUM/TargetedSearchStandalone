@@ -6,7 +6,7 @@ bool Inst2ReturnSearcher::isTheTarget(BFSearchState state) {
   return state.stack.empty() && llvm::isa<llvm::ReturnInst>(state.instruction);
 }
 
-bool Inst2ReturnSearcher::doesIncrementDistance(llvm::Instruction* instr) {
+uint Inst2ReturnSearcher::distanceToPass(llvm::Instruction* instr) {
   // Basically everything encrease the distance by one
-  return true;
+  return 1;
 }

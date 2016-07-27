@@ -15,7 +15,7 @@ class Inst2ReturnSearcher : public BFSearcher {
   /**
    * Count all instruction with distance 1
    */
-  bool doesIncrementDistance(llvm::Instruction* instr);
+  uint distanceToPass(llvm::Instruction* instr);
 
  public:
   explicit Inst2ReturnSearcher(llvm::Instruction* start)

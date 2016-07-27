@@ -13,7 +13,7 @@ bool Decisions2TargetSearcher::isTheTarget(BFSearchState state) {
   return false;
 }
 
-bool Decisions2TargetSearcher::doesIncrementDistance(llvm::Instruction* instr) {
+uint Decisions2TargetSearcher::distanceToPass(llvm::Instruction* instr) {
   // Check, if it is a terminator instruction
   if (llvm::isa<llvm::TerminatorInst>(instr)) {
     // Get it as an terminator instruction
@@ -21,7 +21,7 @@ bool Decisions2TargetSearcher::doesIncrementDistance(llvm::Instruction* instr) {
     llvm::TerminatorInst* term = instr->getParent()->getTerminator();
 
     // Check, if have more than one successor
-    return (term->getNumSuccessors() > 1);
+    return (term->getNumSuccessors() > 1) ? 1 : 0;
   }
-  return false;
+  return 0;
 }

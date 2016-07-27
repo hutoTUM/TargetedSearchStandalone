@@ -2,7 +2,9 @@
 #define BFSEARCHER_H_
 
 #include <deque>
+#include <queue>
 #include <stack>
+#include <vector>
 #include "./helper.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Function.h"
@@ -46,6 +48,14 @@ class BFSearchState {
         stack(_stack) { /* empty */
   }
 
+  friend bool operator<(const BFSearchState& l, const BFSearchState& r) {
+    return l.distanceFromStart < r.distanceFromStart;
+  }
+
+  friend bool operator>(const BFSearchState& l, const BFSearchState& r) {
+    return l.distanceFromStart > r.distanceFromStart;
+  }
+
   /**
    * Checks, if the last call on the stack is the start of a recursion
    */
@@ -60,19 +70,16 @@ class BFSearchState {
  */
 class BFSearcher {
  private:
-  // TODO priority queue is even cooler
-  std::deque<BFSearchState> searchqueue;
+  std::priority_queue<BFSearchState, std::vector<BFSearchState>,
+                      std::greater<BFSearchState> >
+      searchqueue;
 
   // Some variables to avoid extreme long search runs
   static const uint maxDistance = 1e5;
   static const uint maxIterations = 1e7;
   static const uint maxQueueLength = 1e4;
 
-  // TODO merge - depends on priority queue
-  void appendToSearchQueue(BFSearchState state);
-
-  // TODO merge - depends on priority queue
-  void prependToSearchQueue(BFSearchState state);
+  void addToSearchQueue(BFSearchState state);
 
   /**
    * Small helper function to add a new search state to the search queue. The
@@ -102,8 +109,7 @@ class BFSearcher {
    * Determine the weight of the current instruction, that is added to the
    * overall distance, when passing this instruction.
    */
-  // TODO should return uint not bool - requires switch to priority queue
-  virtual bool doesIncrementDistance(llvm::Instruction* instr) = 0;
+  virtual uint distanceToPass(llvm::Instruction* instr) = 0;
 
  public:
   uint iterationCounter = 0;

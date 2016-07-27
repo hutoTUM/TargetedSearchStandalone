@@ -6,7 +6,7 @@ bool NoTargetSearcher::isTheTarget(BFSearchState state) {
   return false;
 }
 
-bool NoTargetSearcher::doesIncrementDistance(llvm::Instruction* instr) {
+uint NoTargetSearcher::distanceToPass(llvm::Instruction* instr) {
   // Basically everything encrease the distance by one
-  return true;
+  return 1;
 }

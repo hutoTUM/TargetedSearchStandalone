@@ -44,16 +44,16 @@ bool BFSearchState::doesIntroduceRecursion() {
 
 BFSearcher::BFSearcher(llvm::Instruction* start) {
   // Add the start instruction to the search queue with 0 distance so far
-  appendToSearchQueue(BFSearchState(getIteratorOnInstruction(start), 0));
+  addToSearchQueue(BFSearchState(getIteratorOnInstruction(start), 0));
 }
 
 uint BFSearcher::searchForMinimalDistance() {
   while (!searchqueue.empty() &&
-         searchqueue.front().distanceFromStart < maxDistance &&
+         searchqueue.top().distanceFromStart < maxDistance &&
          iterationCounter < maxIterations) {
     // Check, if we already hit the target
-    if (isTheTarget(searchqueue.front())) {
-      return searchqueue.front().distanceFromStart;
+    if (isTheTarget(searchqueue.top())) {
+      return searchqueue.top().distanceFromStart;
     }
     doSingleSearchIteration();
     iterationCounter++;
@@ -62,37 +62,24 @@ uint BFSearcher::searchForMinimalDistance() {
   return -1;
 }
 
-void BFSearcher::appendToSearchQueue(BFSearchState state) {
+void BFSearcher::addToSearchQueue(BFSearchState state) {
   // TODO do not add the same state twice
   if (!state.doesIntroduceRecursion() && searchqueue.size() <= maxQueueLength) {
-    searchqueue.push_back(state);
-  }
-}
-
-void BFSearcher::prependToSearchQueue(BFSearchState state) {
-  // TODO do not add the same state twice
-  if (!state.doesIntroduceRecursion() && searchqueue.size() <= maxQueueLength) {
-    searchqueue.push_front(state);
+    searchqueue.push(state);
   }
 }
 
 void BFSearcher::enqueueInSearchQueue(BFSearchState oldState,
                                       llvm::BasicBlock::iterator next,
                                       std::stack<BFStackEntry> newStack) {
-  bool wasdistanceIncreased = doesIncrementDistance(oldState.instruction);
-
-  if (wasdistanceIncreased) {
-    appendToSearchQueue(BFSearchState(
-        next, oldState.distanceFromStart + wasdistanceIncreased, newStack));
-  } else {
-    prependToSearchQueue(BFSearchState(
-        next, oldState.distanceFromStart + wasdistanceIncreased, newStack));
-  }
+  addToSearchQueue(BFSearchState(
+      next, oldState.distanceFromStart + distanceToPass(oldState.instruction),
+      newStack));
 }
 
 BFSearchState BFSearcher::popFromSeachQueue() {
-  BFSearchState result = searchqueue.front();
-  searchqueue.pop_front();
+  BFSearchState result = searchqueue.top();
+  searchqueue.pop();
   return result;
 }
 
