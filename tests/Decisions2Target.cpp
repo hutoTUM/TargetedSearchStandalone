@@ -1,5 +1,5 @@
 #include "../external/doctest.h"
-#include "../src/Decisions2TargetSearcher.h"
+#include "../src/Decisions2TargetCallSearcher.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/LLVMContext.h"
@@ -20,7 +20,7 @@ uint executeSearchRun(std::string filename, std::string entryfunction,
   llvm::Instruction* start = &(function->front().front());
   REQUIRE(start);
 
-  Decisions2TargetSearcher s(start, targetfunction);
+  Decisions2TargetCallSearcher s(start, targetfunction);
   return s.searchForMinimalDistance();
 }
 

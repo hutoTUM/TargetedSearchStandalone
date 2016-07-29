@@ -1,10 +1,10 @@
-#ifndef DECISIONS2TARGETSEARCHER_H_
-#define DECISIONS2TARGETSEARCHER_H_
+#ifndef DECISIONS2TARGETCALLSEARCHER_H_
+#define DECISIONS2TARGETCALLSEARCHER_H_
 
 #include <string>
 #include "./BFSearcher.h"
 
-class Decisions2TargetSearcher : public BFSearcher {
+class Decisions2TargetCallSearcher : public BFSearcher {
  private:
   std::string targetFunctionName;
   static const uint maxDistance = 1e2;
@@ -21,10 +21,10 @@ class Decisions2TargetSearcher : public BFSearcher {
   uint distanceToPass(llvm::Instruction* instr);
 
  public:
-  Decisions2TargetSearcher(llvm::Instruction* start,
+  Decisions2TargetCallSearcher(llvm::Instruction* start,
                            std::string _targetFunctionName)
       : BFSearcher(start), targetFunctionName(_targetFunctionName) { /* empty */
   }
 };
 
-#endif  // DECISIONS2TARGETSEARCHER_H_
+#endif  // DECISIONS2TARGETCALLSEARCHER_H_

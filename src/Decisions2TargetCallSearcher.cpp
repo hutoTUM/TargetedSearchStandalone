@@ -1,19 +1,23 @@
-#include "./Decisions2TargetSearcher.h"
+#include "./Decisions2TargetCallSearcher.h"
 #include "llvm/IR/Instructions.h"
 
 
-bool Decisions2TargetSearcher::isTheTarget(BFSearchState state) {
+bool Decisions2TargetCallSearcher::isTheTarget(BFSearchState state) {
   // Check, if it is a call instruction
   if (llvm::isa<llvm::CallInst>(state.instruction)) {
-    // Check, if it calls our target
+    // Extract the called function
     llvm::CallInst* call = llvm::cast<llvm::CallInst>(state.instruction);
     llvm::Function* called = call->getCalledFunction();
-    return called->getName().str() == this->targetFunctionName;
+    // Check, if it calls our target or one of the klee internals used
+    // be the prepend error modification to actually check for these errors
+    return called->getName().str() == this->targetFunctionName ||
+           called->getName() == "klee_silent_exit" ||
+           called->getName() == "klee_report_error";
   }
   return false;
 }
 
-uint Decisions2TargetSearcher::distanceToPass(llvm::Instruction* instr) {
+uint Decisions2TargetCallSearcher::distanceToPass(llvm::Instruction* instr) {
   // Check, if it is a terminator instruction
   if (llvm::isa<llvm::TerminatorInst>(instr)) {
     // Get it as an terminator instruction
