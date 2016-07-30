@@ -22,8 +22,15 @@ class Decisions2TargetCallSearcher : public BFSearcher {
 
  public:
   Decisions2TargetCallSearcher(llvm::Instruction* start,
-                           std::string _targetFunctionName)
+                               std::string _targetFunctionName)
       : BFSearcher(start), targetFunctionName(_targetFunctionName) { /* empty */
+  }
+
+  Decisions2TargetCallSearcher(llvm::Instruction* start,
+                               std::list<llvm::Instruction*> stack,
+                               std::string _targetFunctionName)
+      : BFSearcher(start, stack),
+        targetFunctionName(_targetFunctionName) { /* empty */
   }
 };
 

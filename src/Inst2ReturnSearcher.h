@@ -21,6 +21,11 @@ class Inst2ReturnSearcher : public BFSearcher {
   explicit Inst2ReturnSearcher(llvm::Instruction* start)
       : BFSearcher(start) { /* empty */
   }
+
+  Inst2ReturnSearcher(llvm::Instruction* start,
+                      std::list<llvm::Instruction*> stack)
+      : BFSearcher(start, stack) { /* empty */
+  }
 };
 
 #endif  // INST2RETURNSEARCHER_H_

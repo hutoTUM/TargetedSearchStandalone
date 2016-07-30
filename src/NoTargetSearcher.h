@@ -26,6 +26,11 @@ class NoTargetSearcher : public BFSearcher {
   explicit NoTargetSearcher(llvm::Instruction* start)
       : BFSearcher(start) { /* empty */
   }
+
+  NoTargetSearcher(llvm::Instruction* start,
+                   std::list<llvm::Instruction*> stack)
+      : BFSearcher(start, stack) { /* empty */
+  }
 };
 
 #endif  // NOTARGETSEARCHER_H_

@@ -1,5 +1,6 @@
 #include "./BFSearcher.h"
 #include <deque>
+#include <list>
 #include <stack>
 #include "./helper.h"
 #include "llvm/IR/BasicBlock.h"
@@ -7,6 +8,18 @@
 #include "llvm/IR/Instructions.h"
 #include "llvm/Support/CFG.h"
 
+
+BFSearchState::BFSearchState(llvm::Instruction* _instruction,
+                             uint _distanceFromStart,
+                             std::list<llvm::Instruction*> _stack)
+    : instruction(getIteratorOnInstruction(_instruction)),
+      distanceFromStart(_distanceFromStart),
+      stack() {
+  for (std::list<llvm::Instruction*>::iterator it = _stack.begin();
+       it != _stack.end(); it++) {
+    this->stack.push(BFStackEntry(getIteratorOnInstruction(*it)));
+  }
+}
 
 bool BFSearchState::doesIntroduceRecursion() {
   // Empty stacks do not contain recursions
@@ -44,7 +57,14 @@ bool BFSearchState::doesIntroduceRecursion() {
 
 BFSearcher::BFSearcher(llvm::Instruction* start) {
   // Add the start instruction to the search queue with 0 distance so far
-  addToSearchQueue(BFSearchState(getIteratorOnInstruction(start), 0));
+  addToSearchQueue(BFSearchState(start, 0));
+}
+
+BFSearcher::BFSearcher(llvm::Instruction* start,
+                       std::list<llvm::Instruction*> stack) {
+  // Add the start instruction to the search queue with 0 distance so far
+  // and everything that was stored on the stack so far
+  addToSearchQueue(BFSearchState(start, 0, stack));
 }
 
 uint BFSearcher::searchForMinimalDistance() {

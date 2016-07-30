@@ -2,6 +2,7 @@
 #define BFSEARCHER_H_
 
 #include <deque>
+#include <list>
 #include <queue>
 #include <set>
 #include <stack>
@@ -53,6 +54,14 @@ class BFSearchState {
       : instruction(_instruction),
         distanceFromStart(_distanceFromStart),
         stack(_stack) { /* empty */
+  }
+
+  BFSearchState(llvm::Instruction* _instruction, uint _distanceFromStart,
+                std::list<llvm::Instruction*> _stack);
+
+  BFSearchState(llvm::Instruction* _instruction, uint _distanceFromStart)
+      : instruction(getIteratorOnInstruction(_instruction)),
+        distanceFromStart(_distanceFromStart) { /* empty */
   }
 
   friend bool operator<(const BFSearchState& l, const BFSearchState& r) {
@@ -139,6 +148,7 @@ class BFSearcher {
   uint iterationCounter = 0;
 
   explicit BFSearcher(llvm::Instruction* start);
+  BFSearcher(llvm::Instruction* start, std::list<llvm::Instruction*> stack);
 
   /**
    * Runs a search for the minimal distance to the target. If the target is
