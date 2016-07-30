@@ -7,7 +7,7 @@
 class Decisions2TargetCallSearcher : public BFSearcher {
  private:
   std::string targetFunctionName;
-  static const uint maxDistance = 1e2;
+  static const uint maxDistance = 100;
 
   /**
    * True, iff it is a call to our target function

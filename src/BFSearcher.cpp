@@ -58,6 +58,9 @@ bool BFSearchState::doesIntroduceRecursion() {
 BFSearcher::BFSearcher(llvm::Instruction* start) {
   // Add the start instruction to the search queue with 0 distance so far
   addToSearchQueue(BFSearchState(start, 0));
+
+  // Initialize the iteration counter
+  this->iterationCounter = 0;
 }
 
 BFSearcher::BFSearcher(llvm::Instruction* start,
@@ -65,6 +68,9 @@ BFSearcher::BFSearcher(llvm::Instruction* start,
   // Add the start instruction to the search queue with 0 distance so far
   // and everything that was stored on the stack so far
   addToSearchQueue(BFSearchState(start, 0, stack));
+
+  // Initialize the iteration counter
+  this->iterationCounter = 0;
 }
 
 uint BFSearcher::searchForMinimalDistance() {

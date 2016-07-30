@@ -95,9 +95,9 @@ class BFSearcher {
       duplicateFilter;
 
   // Some variables to avoid extreme long search runs
-  static const uint maxDistance = 1e5;
-  static const uint maxIterations = 1e7;
-  static const uint maxQueueLength = 1e4;
+  static const uint maxDistance = 100000;
+  static const uint maxIterations = 10000000;
+  static const uint maxQueueLength = 10000;
 
   /**
    * Add the state to search queue, if some sanity checks are passed
@@ -145,7 +145,7 @@ class BFSearcher {
   virtual uint distanceToPass(llvm::Instruction* instr) = 0;
 
  public:
-  uint iterationCounter = 0;
+  uint iterationCounter;
 
   explicit BFSearcher(llvm::Instruction* start);
   BFSearcher(llvm::Instruction* start, std::list<llvm::Instruction*> stack);
