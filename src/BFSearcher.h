@@ -73,9 +73,9 @@ class BFSearchState {
   }
 
   /**
-   * Checks, if the last call on the stack is the start of a recursion
+   * Checks, if next is the start of a recursion
    */
-  bool doesIntroduceRecursion();
+  bool doesIntroduceRecursion(BFStackEntry next);
 };
 
 /**

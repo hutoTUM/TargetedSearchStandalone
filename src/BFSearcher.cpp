@@ -21,20 +21,18 @@ BFSearchState::BFSearchState(llvm::Instruction* _instruction,
   }
 }
 
-bool BFSearchState::doesIntroduceRecursion() {
+bool BFSearchState::doesIntroduceRecursion(BFStackEntry next) {
   // Empty stacks do not contain recursions
   if (this->stack.empty()) {
     return false;
   }
 
-  // Copy the stack and remove first entry
+  // Copy the stack
   std::stack<BFStackEntry> stackCopy(this->stack);
-  BFStackEntry last = stackCopy.top();
-  stackCopy.pop();
 
-  // Extract the function called by the last stack entry
-  llvm::CallInst* lastcall = llvm::cast<llvm::CallInst>(last.call);
-  llvm::Function* lastcalled = lastcall->getCalledFunction();
+  // Extract the function called by the next stack entry
+  llvm::CallInst* nextcall = llvm::cast<llvm::CallInst>(next.call);
+  llvm::Function* nextcalled = nextcall->getCalledFunction();
 
   // check if last call in the stack exists twice
   while (!stackCopy.empty()) {
@@ -44,7 +42,7 @@ bool BFSearchState::doesIntroduceRecursion() {
     llvm::CallInst* probecall = llvm::cast<llvm::CallInst>(probe.call);
     llvm::Function* probecalled = probecall->getCalledFunction();
 
-    if (lastcalled == probecalled) {
+    if (nextcalled == probecalled) {
       return true;
     }
     stackCopy.pop();
@@ -89,8 +87,7 @@ uint BFSearcher::searchForMinimalDistance() {
 }
 
 void BFSearcher::addToSearchQueue(BFSearchState state) {
-  if (!state.doesIntroduceRecursion() && !wasAddedEarlier(state) &&
-      searchqueue.size() <= maxQueueLength) {
+  if (!wasAddedEarlier(state) && searchqueue.size() <= maxQueueLength) {
     searchqueue.push(state);
     this->rememberAsAdded(state);
   }
@@ -144,11 +141,15 @@ void BFSearcher::doSingleSearchIteration() {
     if (called && !called->isIntrinsic() && !called->empty()) {
       // It is a call to an defined function
 
-      // Add the current call instruction to the stack
-      curr.stack.push(BFStackEntry(curr.instruction));
+      // Avoid recursions
+      BFStackEntry next(curr.instruction);
+      if (!curr.doesIntroduceRecursion(next)) {
+        // Add the current call instruction to the stack
+        curr.stack.push(next);
 
-      // Add everything to the search queue
-      enqueueInSearchQueue(curr, called->front().begin(), curr.stack);
+        // Add everything to the search queue
+        enqueueInSearchQueue(curr, called->front().begin(), curr.stack);
+      }
     } else {
       // Just skip the called function and treat it as an normal instruction
       enqueueInSearchQueue(curr, (++(curr.instruction))--, curr.stack);
