@@ -11,7 +11,8 @@ LLVM_CONFIG_COMMAND = \
 		`$(LLVM_BIN_PATH)/llvm-config --ldflags`
 
 # Find all the source files
-CPPS = $(filter-out src/main.cpp,$(wildcard src/*.cpp))
+MAINS = src/main.cpp src/main-notarget.cpp
+CPPS = $(filter-out $(MAINS),$(wildcard src/*.cpp))
 OBJS = $(addprefix bin/,$(notdir $(CPPS:.cpp=.o)))
 
 # Find all the source files for the tests
@@ -22,7 +23,7 @@ TSTOS = $(addprefix bin/tests_,$(notdir $(TSTCS:.cpp=.o)))
 EXACS = $(wildcard examples/*.c)
 EXAOS = $(addprefix bin/,$(notdir $(EXACS:.c=.bc)))
 
-all: bin/search
+all: bin/search bin/search-notarget
 
 bin/search: $(OBJS) bin/main.o
 	$(CXX) $(CXXFLAGS_LLVM) $^ $(LLVM_CONFIG_COMMAND) -o $@
