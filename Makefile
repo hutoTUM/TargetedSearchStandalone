@@ -27,6 +27,9 @@ all: bin/search
 bin/search: $(OBJS) bin/main.o
 	$(CXX) $(CXXFLAGS_LLVM) $^ $(LLVM_CONFIG_COMMAND) -o $@
 
+bin/search-notarget: $(OBJS) bin/main-notarget.o
+	$(CXX) $(CXXFLAGS_LLVM) $^ $(LLVM_CONFIG_COMMAND) -o $@
+
 .PHONY: test
 test: bin/testsuite $(EXAOS)
 	./bin/testsuite
