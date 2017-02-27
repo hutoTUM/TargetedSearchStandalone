@@ -1,66 +1,84 @@
+########################################
+# Define Variables
+########################################
 LLVM_SRC_PATH ?= $$HOME/build/llvm
 LLVM_BUILD_PATH ?= $$HOME/build/llvm/Release
 LLVM_BIN_PATH ?= $(LLVM_BUILD_PATH)/bin
 LLVM_INCLUDES ?= -I$(LLVM_SRC_PATH)/include -I$(LLVM_BUILD_PATH)/include
 
-CXX = g++
+CXX ?= g++
 CXXFLAGS_LLVM = -std=c++98 $(LLVM_INCLUDES)
 
 LLVM_CONFIG_COMMAND = \
 		`$(LLVM_BIN_PATH)/llvm-config --cxxflags --libs` \
 		`$(LLVM_BIN_PATH)/llvm-config --ldflags`
 
+# small helper to build the directory of the current target
+MAKETARGETDIR = @mkdir -p $(@D)
+# small helper for building binaries
+MAKEBINARY = $(CXX) $(CXXFLAGS_LLVM) $^ $(LLVM_CONFIG_COMMAND) -o $@
+
 # Find all the source files
-MAINS = src/main.cpp src/main-notarget.cpp
-CPPS = $(filter-out $(MAINS),$(wildcard src/*.cpp))
-OBJS = $(addprefix bin/,$(notdir $(CPPS:.cpp=.o)))
+#DELETE# MAINS = src/main.cpp src/main-notarget.cpp
+CPPS = $(wildcard lib/*.cpp) $(wildcard lib/**/*.cpp)
+OBJS = $(addprefix bin/,$(CPPS:.cpp=.o))
 
 # Find all the source files for the tests
 TSTCS = $(wildcard tests/*.cpp)
-TSTOS = $(addprefix bin/tests_,$(notdir $(TSTCS:.cpp=.o)))
+TSTOS = $(addprefix bin/,$(TSTCS:.cpp=.o))
 
 # Find all example files
-EXACS = $(wildcard examples/*.c)
-EXAOS = $(addprefix bin/,$(notdir $(EXACS:.c=.bc)))
+EXMPCS = $(wildcard examples/*.c)
+EXMPBC = $(addprefix bin/,$(EXMPCS:.c=.bc))
 
-all: bin/search bin/search-notarget
 
-bin/search: $(OBJS) bin/main.o
-	$(CXX) $(CXXFLAGS_LLVM) $^ $(LLVM_CONFIG_COMMAND) -o $@
+########################################
+# Common aliases
+########################################
+all: bin/decisions bin/notarget examples
+examples: $(EXMPBC)
 
-bin/search-notarget: $(OBJS) bin/main-notarget.o
-	$(CXX) $(CXXFLAGS_LLVM) $^ $(LLVM_CONFIG_COMMAND) -o $@
 
-.PHONY: test
-test: bin/testsuite $(EXAOS)
-	./bin/testsuite
+########################################
+# The actual build and compiler commands
+########################################
+bin/%.o: %.cpp
+	$(MAKETARGETDIR)
+	$(CXX) $(CXXFLAGS_LLVM) -c $^ $(LLVM_CONFIG_COMMAND) -o $@
 
-.PHONY: valgrind
-valgrind: bin/testsuite $(EXAOS)
-	valgrind ./bin/testsuite
+bin/%: bin/main/%.o $(OBJS)
+	$(MAKEBINARY)
+
+bin/examples/%.bc: examples/%.c
+	$(MAKETARGETDIR)
+	$(LLVM_BIN_PATH)/clang -c -emit-llvm -O3 -g $^ -o $@
 
 bin/testsuite: external/doctest.h $(OBJS) $(TSTOS)
 	$(CXX) $(CXXFLAGS_LLVM) -o $@ $^ $(LLVM_CONFIG_COMMAND) -fexceptions
 
-bin/tests_%.o: tests/%.cpp
-	$(CXX) $(CXXFLAGS_LLVM) -c $^ $(LLVM_CONFIG_COMMAND) -fexceptions -o $@
 
-bin/%.o: src/%.cpp
-	$(CXX) $(CXXFLAGS_LLVM) -c $^ $(LLVM_CONFIG_COMMAND) -o $@
-
-bin/%.o: src/%.cpp src/%.h
-	$(CXX) $(CXXFLAGS_LLVM) -c $^ $(LLVM_CONFIG_COMMAND) -o $@
-
-bin/%.bc: examples/%.c
-	$(LLVM_BIN_PATH)/clang -c -emit-llvm -O3 -g $^ -o $@
-
+########################################
+# External dependencies
+########################################
 external/doctest.h:
 	wget https://raw.githubusercontent.com/onqtam/doctest/master/doctest/doctest.h -O external/doctest.h
 
+
+########################################
+# Miscellaneous
+########################################
 .PHONY: clean
 clean:
 	@ rm -rf bin
 	@ git checkout bin/.gitignore
+
+.PHONY: test
+test: bin/testsuite examples
+	./bin/testsuite
+
+.PHONY: valgrind
+valgrind: bin/testsuite examples
+	valgrind ./bin/testsuite
 
 .PHONY: format
 format:

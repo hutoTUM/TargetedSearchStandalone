@@ -1,8 +1,8 @@
-#include "./BFSearcher.h"
+#include "./../include/BFSearcher.h"
 #include <deque>
 #include <list>
 #include <stack>
-#include "./helper.h"
+#include "./../include/helper.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Instructions.h"

@@ -1,12 +1,8 @@
-#ifndef HELPER_H_
-#define HELPER_H_
+#ifndef TIMIMG_H_
+#define TIMIMG_H_
 
 #include <sys/time.h>
 #include <stdint.h>
-#include "llvm/IR/BasicBlock.h"
-#include "llvm/IR/Instructions.h"
-
-llvm::BasicBlock::iterator getIteratorOnInstruction(llvm::Instruction* inst);
 
 static inline uint64_t getCurrentTimeInMicroSeconds() {
   struct timeval time;
@@ -23,4 +19,4 @@ static inline uint64_t getCurrentTimeInMilliSeconds() {
 }
 
 
-#endif  // HELPER_H_
+#endif  // TIMIMG_H_

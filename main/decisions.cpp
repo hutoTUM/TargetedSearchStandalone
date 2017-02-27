@@ -1,8 +1,7 @@
-#include <stdint.h>
 #include <iostream>
 #include <string>
-#include "./NoTargetSearcher.h"
-#include "./helper.h"
+#include "../include/Inst2ReturnSearcher.h"
+#include "../include/Decisions2TargetCallSearcher.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/LLVMContext.h"
@@ -16,6 +15,10 @@
 llvm::cl::opt<std::string> BitcodeFilename(
   llvm::cl::Positional,
   llvm::cl::desc("<input.bc>"), llvm::cl::Required);
+
+llvm::cl::opt<std::string> TargetFunction(
+  "target", llvm::cl::desc("Name of the targeted Function"),
+  llvm::cl::value_desc("targetfunction"));
 
 llvm::cl::opt<std::string> EntryFunction(
   "entry",
@@ -43,15 +46,22 @@ int main(int argc, char** argv) {
     return -1;
   }
 
-  for (int i = 0; i < 5; i++) {
-    NoTargetSearcher s(&(entry->front().front()));
+  if (TargetFunction.empty()) {
+    Inst2ReturnSearcher s(&(entry->front().front()));
+    llvm::outs() << "Minimal Instruction from " << EntryFunction
+      << " to final return: " << s.searchForMinimalDistance() << '\n';
+  } else {
+    llvm::Function* target = module->getFunction(TargetFunction);
 
-    uint64_t start = getCurrentTimeInMilliSeconds();
-    s.searchForMinimalDistance();
-    uint64_t end = getCurrentTimeInMilliSeconds();
+    if (!target) {
+      llvm::errs() << "Target function " << TargetFunction << " not found" << '\n';
+      return -1;
+    }
 
-    llvm::outs() << "Duration " << (end - start) << " ms" << '\n';
+    Decisions2TargetCallSearcher s(&(entry->front().front()), TargetFunction);
+
+    llvm::outs() << "Minimal Decisions from " << EntryFunction
+      << " to call of " << TargetFunction <<": "
+      << s.searchForMinimalDistance() << '\n';
   }
-
-  return 0;
 }
