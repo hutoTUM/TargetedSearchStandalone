@@ -2,7 +2,7 @@
 #define DECISIONS2TARGETCALLSEARCHER_H_
 
 #include <string>
-#include "./BFSearcher.h"
+#include "./../BFSearcher.h"
 
 class Decisions2TargetCallSearcher : public BFSearcher {
  private:

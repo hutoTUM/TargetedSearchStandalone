@@ -3,7 +3,7 @@
 
 #include <stack>
 #include <string>
-#include "./BFSearcher.h"
+#include "./../BFSearcher.h"
 
 class Inst2ReturnSearcher : public BFSearcher {
  private:

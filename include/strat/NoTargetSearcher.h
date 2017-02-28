@@ -3,7 +3,7 @@
 
 #include <stack>
 #include <string>
-#include "./BFSearcher.h"
+#include "./../BFSearcher.h"
 
 class NoTargetSearcher : public BFSearcher {
  private:

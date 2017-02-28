@@ -1,16 +1,20 @@
 #include <stdint.h>
 #include <iostream>
 #include <string>
-#include "./../include/NoTargetSearcher.h"
+#include "./../include/strat/NoTargetSearcher.h"
 #include "./../include/timing.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Module.h"
 #include "llvm/IRReader/IRReader.h"
-#include "llvm/Support/CommandLine.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Support/SourceMgr.h"
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmisleading-indentation"
+#include "llvm/Support/CommandLine.h"
+#pragma GCC diagnostic pop
 
 
 llvm::cl::opt<std::string> BitcodeFilename(

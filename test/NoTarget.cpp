@@ -1,5 +1,5 @@
 #include "../external/doctest.h"
-#include "../src/NoTargetSearcher.h"
+#include "../include/strat/NoTargetSearcher.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/LLVMContext.h"
@@ -31,10 +31,10 @@ TEST_CASE("Check, if the search hung up in infinite queues") {
   // the limits might be a little generous, but loops break them anyway
 
   SUBCASE("Recursion in fibonacci numbers") {
-    CHECK(getIterationsInSearch("bin/fibonacci.bc", "main") < 50);
+    CHECK(getIterationsInSearch("bin/examples/fibonacci.bc", "main") < 50);
   }
 
   SUBCASE("while(true) continue") {
-    CHECK(getIterationsInSearch("bin/infinite.bc", "infinite") < 10);
+    CHECK(getIterationsInSearch("bin/examples/infinite.bc", "infinite") < 10);
   }
 }

@@ -3,4 +3,6 @@
 
 TEST_CASE("Dummy test case") {
   CHECK(true);
+  WARN(true);
+  REQUIRE(true);
 }

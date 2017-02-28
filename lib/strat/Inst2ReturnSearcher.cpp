@@ -1,4 +1,4 @@
-#include "./../include/Inst2ReturnSearcher.h"
+#include "./../../include/strat/Inst2ReturnSearcher.h"
 #include "llvm/IR/Instructions.h"
 
 bool Inst2ReturnSearcher::isTheTarget(BFSearchState state) {
@@ -6,7 +6,7 @@ bool Inst2ReturnSearcher::isTheTarget(BFSearchState state) {
   return state.stack.empty() && llvm::isa<llvm::ReturnInst>(state.instruction);
 }
 
-uint Inst2ReturnSearcher::distanceToPass(llvm::Instruction* instr) {
+uint Inst2ReturnSearcher::distanceToPass(llvm::Instruction* /*instr*/) {
   // Basically everything encrease the distance by one
   return 1;
 }
