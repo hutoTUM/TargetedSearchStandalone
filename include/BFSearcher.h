@@ -7,7 +7,6 @@
 #include <list>
 #include <queue>
 #include <set>
-#include <stack>
 #include <utility>
 #include <vector>
 #include "llvm/IR/BasicBlock.h"
@@ -25,7 +24,7 @@ class BFSearcher {
       searchqueue;
 
   // This data structure is ugly as hell, but is there any better way?
-  std::set<std::pair<llvm::Instruction*, std::stack<BFStackEntry> > >
+  std::set<std::pair<llvm::Instruction*, std::deque<BFStackEntry> > >
       duplicateFilter;
 
   // Some variables to avoid extreme long search runs
@@ -44,7 +43,7 @@ class BFSearcher {
    */
   void enqueueInSearchQueue(BFSearchState oldState,
                             llvm::BasicBlock::iterator next,
-                            std::stack<BFStackEntry> newStack);
+                            std::deque<BFStackEntry> newStack);
 
   /**
    * Get and remove the next entry from the search queue

@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
     s.searchForMinimalDistance();
     uint64_t end = getCurrentTimeInMilliSeconds();
 
-    llvm::outs() << "Duration " << (end - start) << " ms" << '\n';
+    llvm::outs() << "Duration " << (end - start) << " ms with " << s.iterationCounter << " iterations." << '\n';
   }
 
   return 0;

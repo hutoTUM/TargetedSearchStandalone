@@ -2,7 +2,6 @@
 #include "./../include/BFSearchState.h"
 #include <deque>
 #include <list>
-#include <stack>
 #include "./../include/helper.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Function.h"
@@ -52,7 +51,7 @@ void BFSearcher::addToSearchQueue(BFSearchState state) {
 
 void BFSearcher::enqueueInSearchQueue(BFSearchState oldState,
                                       llvm::BasicBlock::iterator next,
-                                      std::stack<BFStackEntry> newStack) {
+                                      std::deque<BFStackEntry> newStack) {
   addToSearchQueue(BFSearchState(
       next, oldState.distanceFromStart + distanceToPass(oldState.instruction),
       newStack));
@@ -102,7 +101,7 @@ void BFSearcher::doSingleSearchIteration() {
       BFStackEntry next(curr.instruction);
       if (!curr.doesIntroduceRecursion(next)) {
         // Add the current call instruction to the stack
-        curr.stack.push(next);
+        curr.stack.push_back(next);
 
         // Add everything to the search queue
         enqueueInSearchQueue(curr, called->front().begin(), curr.stack);
@@ -111,6 +110,7 @@ void BFSearcher::doSingleSearchIteration() {
       // Just skip the called function and treat it as an normal instruction
       enqueueInSearchQueue(curr, (++(curr.instruction))--, curr.stack);
     }
+    // call->getCalledValue()->dump();
 
   } else if (llvm::isa<llvm::ReturnInst>(curr.instruction)) {
     // If return, add last entry from stack
@@ -118,9 +118,9 @@ void BFSearcher::doSingleSearchIteration() {
     // Check, if we have any point to return to
     if (!curr.stack.empty()) {
       // Extract the top stack frame
-      BFStackEntry gobackto = curr.stack.top();
+      BFStackEntry gobackto = curr.stack.back();
       // and remove it from the stack
-      curr.stack.pop();
+      curr.stack.pop_back();
 
       // Add everything to the search queue
       enqueueInSearchQueue(curr, ++(gobackto.call), curr.stack);

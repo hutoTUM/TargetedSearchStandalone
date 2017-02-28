@@ -5,7 +5,6 @@
 #include <list>
 #include <queue>
 #include <set>
-#include <stack>
 #include <utility>
 #include <vector>
 #include "./helper.h"
@@ -29,6 +28,11 @@ class BFStackEntry {
     // Very strange way for comparison, but there are no alternatives ...
     return &*l.call < &*r.call;
   }
+
+  friend bool operator==(const BFStackEntry& l, const BFStackEntry& r) {
+    // Very strange way for comparison, but there are no alternatives ...
+    return &*l.call == &*r.call;
+  }
 };
 
 /**
@@ -41,7 +45,7 @@ class BFSearchState {
   // Accumulated distance from the start of the search till now
   uint distanceFromStart;
   // Stack corresponding to the call path to the current instruction
-  std::stack<BFStackEntry> stack;
+  std::deque<BFStackEntry> stack;
 
   BFSearchState(llvm::BasicBlock::iterator _instruction,
                 uint _distanceFromStart)
@@ -50,7 +54,7 @@ class BFSearchState {
   }
 
   BFSearchState(llvm::BasicBlock::iterator _instruction,
-                uint _distanceFromStart, std::stack<BFStackEntry> _stack)
+                uint _distanceFromStart, std::deque<BFStackEntry> _stack)
       : instruction(_instruction),
         distanceFromStart(_distanceFromStart),
         stack(_stack) { /* empty */

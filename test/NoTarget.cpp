@@ -31,7 +31,7 @@ TEST_CASE("Check, if the search hung up in infinite queues") {
   // the limits might be a little generous, but loops break them anyway
 
   SUBCASE("Recursion in fibonacci numbers") {
-    CHECK(getIterationsInSearch("bin/examples/fibonacci.bc", "main") < 50);
+    CHECK(getIterationsInSearch("bin/examples/fibonacci.bc", "main") < 60);
   }
 
   SUBCASE("while(true) continue") {
