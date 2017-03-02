@@ -22,5 +22,6 @@ BFSearchState::BFSearchState(llvm::Instruction* _instruction,
 }
 
 bool BFSearchState::doesIntroduceRecursion(BFStackEntry next) {
-  return std::find(this->stack.begin(), this->stack.end(), next) != this->stack.end();
+  return std::find(this->stack.begin(), this->stack.end(), next) !=
+         this->stack.end();
 }

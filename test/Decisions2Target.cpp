@@ -35,11 +35,13 @@ TEST_CASE("Count the minimal number of decisions to target function call") {
   }
 
   SUBCASE("One br decision on the way to target") {
-    CHECK(executeSearchRun("bin/examples/branches.bc", "twice", "catchme") == 1);
+    CHECK(executeSearchRun("bin/examples/branches.bc", "twice", "catchme") ==
+          1);
   }
 
   SUBCASE("Two br decisions on the way to target") {
-    CHECK(executeSearchRun("bin/examples/branches.bc", "quarter", "catchme") == 2);
+    CHECK(executeSearchRun("bin/examples/branches.bc", "quarter", "catchme") ==
+          2);
   }
 }
 
@@ -49,14 +51,18 @@ TEST_CASE("Detects, if the target is not reachable at all") {
   }
 
   SUBCASE("Lower function cannot reach higher functions") {
-    CHECK(executeSearchRun("bin/examples/divisible.bc", "divby2", "divby5") == -1);
-    CHECK(executeSearchRun("bin/examples/divisible.bc", "divby6", "divby10") == -1);
-    CHECK(executeSearchRun("bin/examples/divisible.bc", "divby30", "main") == -1);
+    CHECK(executeSearchRun("bin/examples/divisible.bc", "divby2", "divby5") ==
+          -1);
+    CHECK(executeSearchRun("bin/examples/divisible.bc", "divby6", "divby10") ==
+          -1);
+    CHECK(executeSearchRun("bin/examples/divisible.bc", "divby30", "main") ==
+          -1);
   }
 }
 
 TEST_CASE("Complicated pathes") {
   SUBCASE("Return is better than directly hit the target") {
-    CHECK(executeSearchRun("bin/examples/cheapreturn.bc", "start", "catchme") == 1);
+    CHECK(executeSearchRun("bin/examples/cheapreturn.bc", "start", "catchme") ==
+          1);
   }
 }

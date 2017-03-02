@@ -28,19 +28,21 @@ TEST_CASE(
     "Count the minimal number of instructions to the final return "
     "in bin/examples/blocks.bc") {
   SUBCASE("One block is passed completely") {
-    Inst2ReturnSearcher s(prepareTestCase("bin/examples/blocks.bc", "oneblock"));
+    Inst2ReturnSearcher s(
+        prepareTestCase("bin/examples/blocks.bc", "oneblock"));
     CHECK(s.searchForMinimalDistance() == 6);
   }
 
   SUBCASE("Four blocks choose the shortest way") {
-    Inst2ReturnSearcher s(prepareTestCase("bin/examples/blocks.bc", "fourblocks"));
+    Inst2ReturnSearcher s(
+        prepareTestCase("bin/examples/blocks.bc", "fourblocks"));
     CHECK(s.searchForMinimalDistance() == 6);
   }
 
   SUBCASE("Target instruction has distance 0") {
     llvm::SMDiagnostic Err;
-    llvm::Module* module =
-        llvm::ParseIRFile("bin/examples/blocks.bc", Err, llvm::getGlobalContext());
+    llvm::Module* module = llvm::ParseIRFile("bin/examples/blocks.bc", Err,
+                                             llvm::getGlobalContext());
     // REQUIRE(module);
 
     llvm::Function* function = module->getFunction("oneblock");
@@ -90,7 +92,8 @@ TEST_CASE(
   }
 
   SUBCASE("Control Flow Graph cannot be sorted topologically") {
-    Inst2ReturnSearcher s(prepareTestCase("bin/examples/doomcircle.bc", "main"));
+    Inst2ReturnSearcher s(
+        prepareTestCase("bin/examples/doomcircle.bc", "main"));
     CHECK(s.searchForMinimalDistance() == 12);
   }
 }

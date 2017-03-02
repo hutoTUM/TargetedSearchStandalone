@@ -1,8 +1,8 @@
 #ifndef TIMIMG_H_
 #define TIMIMG_H_
 
-#include <sys/time.h>
 #include <stdint.h>
+#include <sys/time.h>
 
 static inline uint64_t getCurrentTimeInMicroSeconds() {
   struct timeval time;

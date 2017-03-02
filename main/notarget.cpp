@@ -8,8 +8,8 @@
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Module.h"
 #include "llvm/IRReader/IRReader.h"
-#include "llvm/Support/raw_ostream.h"
 #include "llvm/Support/SourceMgr.h"
+#include "llvm/Support/raw_ostream.h"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmisleading-indentation"
@@ -17,14 +17,13 @@
 #pragma GCC diagnostic pop
 
 
-llvm::cl::opt<std::string> BitcodeFilename(
-  llvm::cl::Positional,
-  llvm::cl::desc("<input.bc>"), llvm::cl::Required);
+llvm::cl::opt<std::string> BitcodeFilename(llvm::cl::Positional,
+                                           llvm::cl::desc("<input.bc>"),
+                                           llvm::cl::Required);
 
 llvm::cl::opt<std::string> EntryFunction(
-  "entry",
-  llvm::cl::desc("Name of the function used as entry point"),
-  llvm::cl::init("main"));
+    "entry", llvm::cl::desc("Name of the function used as entry point"),
+    llvm::cl::init("main"));
 
 
 int main(int argc, char** argv) {
@@ -55,7 +54,8 @@ int main(int argc, char** argv) {
     s.searchForMinimalDistance();
     uint64_t end = getCurrentTimeInMilliSeconds();
 
-    llvm::outs() << "Duration " << (end - start) << " ms with " << s.iterationCounter << " iterations." << '\n';
+    llvm::outs() << "Duration " << (end - start) << " ms with "
+                 << s.iterationCounter << " iterations." << '\n';
   }
 
   return 0;
