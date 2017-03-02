@@ -1,11 +1,13 @@
 #include "./../include/BFSearcher.h"
-#include "./../include/BFSearchState.h"
 #include <deque>
 #include <list>
+#include "./../include/BFSearchState.h"
 #include "./../include/helper.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Instructions.h"
+#include "llvm/IR/Module.h"
+#include "llvm/IR/Value.h"
 #include "llvm/Support/CFG.h"
 
 
@@ -89,14 +91,12 @@ void BFSearcher::doSingleSearchIteration() {
   if (llvm::isa<llvm::CallInst>(curr.instruction)) {
     // If call, increase stack and add to search queue
 
-    // Extract the called function
-    llvm::CallInst* call = llvm::cast<llvm::CallInst>(curr.instruction);
-    llvm::Function* called = call->getCalledFunction();
+    llvm::BasicBlock::iterator succ =
+        resolveCall(llvm::cast<llvm::CallInst>(curr.instruction));
 
-    // Check if the function is an external call
-    if (called && !called->isIntrinsic() && !called->empty()) {
-      // It is a call to an defined function
 
+    // If it is a function, that can acutally be called
+    if (succ) {
       // Avoid recursions
       BFStackEntry next(curr.instruction);
       if (!curr.doesIntroduceRecursion(next)) {
@@ -104,13 +104,12 @@ void BFSearcher::doSingleSearchIteration() {
         curr.stack.push_back(next);
 
         // Add everything to the search queue
-        enqueueInSearchQueue(curr, called->front().begin(), curr.stack);
+        enqueueInSearchQueue(curr, succ, curr.stack);
       }
     } else {
       // Just skip the called function and treat it as an normal instruction
       enqueueInSearchQueue(curr, (++(curr.instruction))--, curr.stack);
     }
-    // call->getCalledValue()->dump();
 
   } else if (llvm::isa<llvm::ReturnInst>(curr.instruction)) {
     // If return, add last entry from stack
@@ -144,4 +143,59 @@ void BFSearcher::doSingleSearchIteration() {
     // All other instructions just add their successor
     enqueueInSearchQueue(curr, (++(curr.instruction))--, curr.stack);
   }
+}
+
+/**
+* Resolves a llvm call operation and returns the first instruction
+* executed after the call. If the call cannot be resolved, it returns NULL
+*/
+llvm::BasicBlock::iterator resolveCall(llvm::CallInst* call) {
+  // Extract the called function
+  llvm::Function* called = call->getCalledFunction();
+
+  // Check if the function is an external call
+  if (called && !called->isIntrinsic() && !called->empty()) {
+    // llvm::outs() << "Correctly resolved: " << called->getName() << '\n';
+    return called->front().begin();
+  }
+
+  // Manually resolve the function pointer to the original main function used
+  // in __uClibc_main of KLEE's uClibc implementation
+  if (llvm::isa<llvm::LoadInst>(call->getCalledValue()) &&
+      call->getParent()->getParent()->getName() == "__uClibc_main") {
+    // Extract the type of the function allocated in the called pointer
+    llvm::LoadInst* load = llvm::cast<llvm::LoadInst>(call->getCalledValue());
+    llvm::AllocaInst* alloca =
+        llvm::cast<llvm::AllocaInst>(load->getPointerOperand());
+    llvm::PointerType* inptr =
+        llvm::cast<llvm::PointerType>(alloca->getAllocatedType());
+    llvm::FunctionType* infnc =
+        llvm::cast<llvm::FunctionType>(inptr->getElementType());
+
+    // Check, if the inner function has the signature of a main function
+    if (infnc->getNumParams() == 3 && infnc->getReturnType()->isIntegerTy() &&
+        infnc->getParamType(0)->isIntegerTy() &&
+        infnc->getParamType(1)->isPointerTy() &&
+        infnc->getParamType(2)->isPointerTy()) {
+      // Extract actual content of the parameter for __uClibc_main
+
+      llvm::CallInst* call2uclibc =
+          llvm::cast<llvm::CallInst>(call->getParent()
+                                         ->getParent()
+                                         ->getParent()
+                                         ->getFunction("main")
+                                         ->getEntryBlock()
+                                         .begin());
+      if (call2uclibc->getNumArgOperands() == 7) {
+        llvm::Value* probe = call2uclibc->getArgOperand(0)->stripPointerCasts();
+        if (llvm::isa<llvm::Function>(probe)) {
+          // And return a jump to the first instruction of the user main
+          llvm::Function* usermain = llvm::cast<llvm::Function>(probe);
+          return usermain->front().begin();
+        }
+      }
+    }
+  }
+
+  return NULL;
 }

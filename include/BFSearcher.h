@@ -90,4 +90,6 @@ class BFSearcher {
   uint searchForMinimalDistance();
 };
 
+llvm::BasicBlock::iterator resolveCall(llvm::CallInst* call);
+
 #endif  // BFSEARCHER_H_
