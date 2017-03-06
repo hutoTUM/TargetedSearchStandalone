@@ -3,14 +3,14 @@
 
 #include <stack>
 #include <string>
-#include "./../BFSearcher.h"
+#include "./../DijSearcher.h"
 
-class Inst2ReturnSearcher : public BFSearcher {
+class Inst2ReturnSearcher : public DijSearcher {
  private:
   /**
    * True, iff state is a return instruction with empty stack
    */
-  bool isTheTarget(BFSearchState state);
+  bool isTheTarget(DijSearchState state);
 
   /**
    * Count all instruction with distance 1
@@ -19,12 +19,12 @@ class Inst2ReturnSearcher : public BFSearcher {
 
  public:
   explicit Inst2ReturnSearcher(llvm::Instruction* start)
-      : BFSearcher(start) { /* empty */
+      : DijSearcher(start) { /* empty */
   }
 
   Inst2ReturnSearcher(llvm::Instruction* start,
                       std::list<llvm::Instruction*> stack)
-      : BFSearcher(start, stack) { /* empty */
+      : DijSearcher(start, stack) { /* empty */
   }
 };
 

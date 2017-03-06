@@ -1,7 +1,7 @@
-#ifndef BFSEARCHER_H_
-#define BFSEARCHER_H_
+#ifndef DIJSEARCHER_H_
+#define DIJSEARCHER_H_
 
-#include "./../include/BFSearchState.h"
+#include "./../include/DijSearchState.h"
 
 #include <deque>
 #include <list>
@@ -12,19 +12,19 @@
 #include "llvm/IR/BasicBlock.h"
 
 /**
- * Breadth first search strategy traversing the whole llvm bitcode looking
- * for the shortest distance to a target. Functions for counting the distance
- * of an instruction and to determine the target are virtual, so this is
- * a base class implementing the strategy for a lot of different search types.
+ * Dijkstra's algorithm traversing the whole llvm bitcode looking for the
+ * shortest distance to a target. Functions for counting the distance of an
+ * instruction and to determine the target are virtual, so this is a base class
+ * implementing the strategy for a lot of different search types.
  */
-class BFSearcher {
+class DijSearcher {
  private:
-  std::priority_queue<BFSearchState, std::vector<BFSearchState>,
-                      std::greater<BFSearchState> >
+  std::priority_queue<DijSearchState, std::vector<DijSearchState>,
+                      std::greater<DijSearchState> >
       searchqueue;
 
   // This data structure is ugly as hell, but is there any better way?
-  std::set<std::pair<llvm::Instruction*, std::deque<BFStackEntry> > >
+  std::set<std::pair<llvm::Instruction*, std::deque<DijStackEntry> > >
       duplicateFilter;
 
   // Some variables to avoid extreme long search runs
@@ -35,30 +35,30 @@ class BFSearcher {
   /**
    * Add the state to search queue, if some sanity checks are passed
    */
-  void addToSearchQueue(BFSearchState state);
+  void addToSearchQueue(DijSearchState state);
 
   /**
    * Small helper function to add a new search state to the search queue. The
    * new distance is calculated internally.
    */
-  void enqueueInSearchQueue(BFSearchState oldState,
+  void enqueueInSearchQueue(DijSearchState oldState,
                             llvm::BasicBlock::iterator next,
-                            std::deque<BFStackEntry> newStack);
+                            std::deque<DijStackEntry> newStack);
 
   /**
    * Get and remove the next entry from the search queue
    */
-  BFSearchState popFromSeachQueue();
+  DijSearchState popFromSeachQueue();
 
   /**
    * Check, if the given state was added earlier to the search queue
    */
-  bool wasAddedEarlier(BFSearchState state);
+  bool wasAddedEarlier(DijSearchState state);
 
   /**
    * Store a state for a later wasAddedEarlier check
    */
-  void rememberAsAdded(BFSearchState state);
+  void rememberAsAdded(DijSearchState state);
 
   /**
    * Do one step in the search. Select the next state and add all its
@@ -69,7 +69,7 @@ class BFSearcher {
   /**
    * Check, if the current state is the target of our search
    */
-  virtual bool isTheTarget(BFSearchState state) = 0;
+  virtual bool isTheTarget(DijSearchState state) = 0;
 
   /**
    * Determine the weight of the current instruction, that is added to the
@@ -80,8 +80,8 @@ class BFSearcher {
  public:
   uint iterationCounter;
 
-  explicit BFSearcher(llvm::Instruction* start);
-  BFSearcher(llvm::Instruction* start, std::list<llvm::Instruction*> stack);
+  explicit DijSearcher(llvm::Instruction* start);
+  DijSearcher(llvm::Instruction* start, std::list<llvm::Instruction*> stack);
 
   /**
    * Runs a search for the minimal distance to the target. If the target is
@@ -92,4 +92,4 @@ class BFSearcher {
 
 llvm::BasicBlock::iterator resolveCall(llvm::CallInst* call);
 
-#endif  // BFSEARCHER_H_
+#endif  // DIJSEARCHER_H_

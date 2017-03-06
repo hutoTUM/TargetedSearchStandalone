@@ -2,9 +2,9 @@
 #define DECISIONS2TARGETCALLSEARCHER_H_
 
 #include <string>
-#include "./../BFSearcher.h"
+#include "./../DijSearcher.h"
 
-class Decisions2TargetCallSearcher : public BFSearcher {
+class Decisions2TargetCallSearcher : public DijSearcher {
  private:
   std::string targetFunctionName;
   static const uint maxDistance = 100;
@@ -12,7 +12,7 @@ class Decisions2TargetCallSearcher : public BFSearcher {
   /**
    * True, iff it is a call to our target function
    */
-  bool isTheTarget(BFSearchState state);
+  bool isTheTarget(DijSearchState state);
 
   /**
    * Only instructions causing a branching decision increase distance by 1.
@@ -23,13 +23,13 @@ class Decisions2TargetCallSearcher : public BFSearcher {
  public:
   Decisions2TargetCallSearcher(llvm::Instruction* start,
                                std::string _targetFunctionName)
-      : BFSearcher(start), targetFunctionName(_targetFunctionName) { /* empty */
+      : DijSearcher(start), targetFunctionName(_targetFunctionName) { /* empty */
   }
 
   Decisions2TargetCallSearcher(llvm::Instruction* start,
                                std::list<llvm::Instruction*> stack,
                                std::string _targetFunctionName)
-      : BFSearcher(start, stack),
+      : DijSearcher(start, stack),
         targetFunctionName(_targetFunctionName) { /* empty */
   }
 };

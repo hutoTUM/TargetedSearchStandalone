@@ -1,5 +1,5 @@
-#ifndef BFSEARCHSTATE_H_
-#define BFSEARCHSTATE_H_
+#ifndef DIJSEARCHSTATE_H_
+#define DIJSEARCHSTATE_H_
 
 #include <deque>
 #include <list>
@@ -14,72 +14,73 @@
 
 
 /**
- * The entries on the call stack of one state in BFSearcher. They store
+ * The entries on the call stack of one state in DijSearcher. They store
  * information about the calling instruction.
  */
-class BFStackEntry {
+class DijStackEntry {
  public:
   llvm::BasicBlock::iterator call;
-  explicit BFStackEntry(llvm::BasicBlock::iterator _call)
+  explicit DijStackEntry(llvm::BasicBlock::iterator _call)
       : call(_call) { /* empty */
   }
 
-  friend bool operator<(const BFStackEntry& l, const BFStackEntry& r) {
+  friend bool operator<(const DijStackEntry& l, const DijStackEntry& r) {
     // Very strange way for comparison, but there are no alternatives ...
     return &*l.call < &*r.call;
   }
 
-  friend bool operator==(const BFStackEntry& l, const BFStackEntry& r) {
+  friend bool operator==(const DijStackEntry& l, const DijStackEntry& r) {
     // Very strange way for comparison, but there are no alternatives ...
     return &*l.call == &*r.call;
   }
 };
 
+
 /**
- * A class representing the current progress of a single state in BFSearcher.
+ * A class representing the current progress of a single state in DijSearcher.
  */
-class BFSearchState {
+class DijSearchState {
  public:
   // Iterator on the instruction we are currently looking at
   llvm::BasicBlock::iterator instruction;
   // Accumulated distance from the start of the search till now
   uint distanceFromStart;
   // Stack corresponding to the call path to the current instruction
-  std::deque<BFStackEntry> stack;
+  std::deque<DijStackEntry> stack;
 
-  BFSearchState(llvm::BasicBlock::iterator _instruction,
+  DijSearchState(llvm::BasicBlock::iterator _instruction,
                 uint _distanceFromStart)
       : instruction(_instruction),
         distanceFromStart(_distanceFromStart) { /* empty */
   }
 
-  BFSearchState(llvm::BasicBlock::iterator _instruction,
-                uint _distanceFromStart, std::deque<BFStackEntry> _stack)
+  DijSearchState(llvm::BasicBlock::iterator _instruction,
+                uint _distanceFromStart, std::deque<DijStackEntry> _stack)
       : instruction(_instruction),
         distanceFromStart(_distanceFromStart),
         stack(_stack) { /* empty */
   }
 
-  BFSearchState(llvm::Instruction* _instruction, uint _distanceFromStart,
+  DijSearchState(llvm::Instruction* _instruction, uint _distanceFromStart,
                 std::list<llvm::Instruction*> _stack);
 
-  BFSearchState(llvm::Instruction* _instruction, uint _distanceFromStart)
+  DijSearchState(llvm::Instruction* _instruction, uint _distanceFromStart)
       : instruction(getIteratorOnInstruction(_instruction)),
         distanceFromStart(_distanceFromStart) { /* empty */
   }
 
-  friend bool operator<(const BFSearchState& l, const BFSearchState& r) {
+  friend bool operator<(const DijSearchState& l, const DijSearchState& r) {
     return l.distanceFromStart < r.distanceFromStart;
   }
 
-  friend bool operator>(const BFSearchState& l, const BFSearchState& r) {
+  friend bool operator>(const DijSearchState& l, const DijSearchState& r) {
     return l.distanceFromStart > r.distanceFromStart;
   }
 
   /**
    * Checks, if next is the start of a recursion
    */
-  bool doesIntroduceRecursion(BFStackEntry next);
+  bool doesIntroduceRecursion(DijStackEntry next);
 };
 
-#endif  // BFSEARCHSTATE_H_
+#endif  // DIJSEARCHSTATE_H_

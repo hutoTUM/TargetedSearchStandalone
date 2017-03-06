@@ -2,7 +2,7 @@
 #include "llvm/IR/Instructions.h"
 
 
-bool Decisions2TargetCallSearcher::isTheTarget(BFSearchState state) {
+bool Decisions2TargetCallSearcher::isTheTarget(DijSearchState state) {
   // Check, if it is a call instruction
   if (llvm::isa<llvm::CallInst>(state.instruction)) {
     // Extract the called function

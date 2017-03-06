@@ -1,7 +1,7 @@
 #include "./../../include/strat/NoTargetSearcher.h"
 #include "llvm/IR/Instructions.h"
 
-bool NoTargetSearcher::isTheTarget(BFSearchState /*state*/) {
+bool NoTargetSearcher::isTheTarget(DijSearchState /*state*/) {
   // This searcher never finds his target
   return false;
 }

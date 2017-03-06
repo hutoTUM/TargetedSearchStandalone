@@ -3,9 +3,9 @@
 
 #include <stack>
 #include <string>
-#include "./../BFSearcher.h"
+#include "./../DijSearcher.h"
 
-class NoTargetSearcher : public BFSearcher {
+class NoTargetSearcher : public DijSearcher {
  private:
   // Just a run with more severe limits to reduce test time on infinite loops
   static const uint maxDistance = 10000;
@@ -15,7 +15,7 @@ class NoTargetSearcher : public BFSearcher {
   /**
    * True, iff state is a return instruction with empty stack
    */
-  bool isTheTarget(BFSearchState state);
+  bool isTheTarget(DijSearchState state);
 
   /**
    * Count all instruction with distance 1
@@ -24,12 +24,12 @@ class NoTargetSearcher : public BFSearcher {
 
  public:
   explicit NoTargetSearcher(llvm::Instruction* start)
-      : BFSearcher(start) { /* empty */
+      : DijSearcher(start) { /* empty */
   }
 
   NoTargetSearcher(llvm::Instruction* start,
                    std::list<llvm::Instruction*> stack)
-      : BFSearcher(start, stack) { /* empty */
+      : DijSearcher(start, stack) { /* empty */
   }
 };
 

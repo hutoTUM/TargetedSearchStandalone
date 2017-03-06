@@ -1,4 +1,4 @@
-#include "./../include/BFSearchState.h"
+#include "./../include/DijSearchState.h"
 #include <algorithm>
 #include <deque>
 #include <list>
@@ -9,7 +9,7 @@
 #include "llvm/Support/CFG.h"
 
 
-BFSearchState::BFSearchState(llvm::Instruction* _instruction,
+DijSearchState::DijSearchState(llvm::Instruction* _instruction,
                              uint _distanceFromStart,
                              std::list<llvm::Instruction*> _stack)
     : instruction(getIteratorOnInstruction(_instruction)),
@@ -17,11 +17,11 @@ BFSearchState::BFSearchState(llvm::Instruction* _instruction,
       stack() {
   for (std::list<llvm::Instruction*>::iterator it = _stack.begin();
        it != _stack.end(); it++) {
-    this->stack.push_back(BFStackEntry(getIteratorOnInstruction(*it)));
+    this->stack.push_back(DijStackEntry(getIteratorOnInstruction(*it)));
   }
 }
 
-bool BFSearchState::doesIntroduceRecursion(BFStackEntry next) {
+bool DijSearchState::doesIntroduceRecursion(DijStackEntry next) {
   return std::find(this->stack.begin(), this->stack.end(), next) !=
          this->stack.end();
 }

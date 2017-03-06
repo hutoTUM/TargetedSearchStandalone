@@ -1,7 +1,7 @@
-#include "./../include/BFSearcher.h"
+#include "./../include/DijSearcher.h"
 #include <deque>
 #include <list>
-#include "./../include/BFSearchState.h"
+#include "./../include/DijSearchState.h"
 #include "./../include/helper.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Function.h"
@@ -11,25 +11,25 @@
 #include "llvm/Support/CFG.h"
 
 
-BFSearcher::BFSearcher(llvm::Instruction* start) {
+DijSearcher::DijSearcher(llvm::Instruction* start) {
   // Add the start instruction to the search queue with 0 distance so far
-  addToSearchQueue(BFSearchState(start, 0));
+  addToSearchQueue(DijSearchState(start, 0));
 
   // Initialize the iteration counter
   this->iterationCounter = 0;
 }
 
-BFSearcher::BFSearcher(llvm::Instruction* start,
+DijSearcher::DijSearcher(llvm::Instruction* start,
                        std::list<llvm::Instruction*> stack) {
   // Add the start instruction to the search queue with 0 distance so far
   // and everything that was stored on the stack so far
-  addToSearchQueue(BFSearchState(start, 0, stack));
+  addToSearchQueue(DijSearchState(start, 0, stack));
 
   // Initialize the iteration counter
   this->iterationCounter = 0;
 }
 
-uint BFSearcher::searchForMinimalDistance() {
+uint DijSearcher::searchForMinimalDistance() {
   while (!searchqueue.empty() &&
          searchqueue.top().distanceFromStart < maxDistance &&
          iterationCounter < maxIterations) {
@@ -44,28 +44,28 @@ uint BFSearcher::searchForMinimalDistance() {
   return -1;
 }
 
-void BFSearcher::addToSearchQueue(BFSearchState state) {
+void DijSearcher::addToSearchQueue(DijSearchState state) {
   if (!wasAddedEarlier(state) && searchqueue.size() <= maxQueueLength) {
     searchqueue.push(state);
     this->rememberAsAdded(state);
   }
 }
 
-void BFSearcher::enqueueInSearchQueue(BFSearchState oldState,
+void DijSearcher::enqueueInSearchQueue(DijSearchState oldState,
                                       llvm::BasicBlock::iterator next,
-                                      std::deque<BFStackEntry> newStack) {
-  addToSearchQueue(BFSearchState(
+                                      std::deque<DijStackEntry> newStack) {
+  addToSearchQueue(DijSearchState(
       next, oldState.distanceFromStart + distanceToPass(oldState.instruction),
       newStack));
 }
 
-BFSearchState BFSearcher::popFromSeachQueue() {
-  BFSearchState result = searchqueue.top();
+DijSearchState DijSearcher::popFromSeachQueue() {
+  DijSearchState result = searchqueue.top();
   searchqueue.pop();
   return result;
 }
 
-bool BFSearcher::wasAddedEarlier(BFSearchState state) {
+bool DijSearcher::wasAddedEarlier(DijSearchState state) {
   // Only lookup states, that are the first in their basic block
   if (&(state.instruction->getParent()->front()) == &*state.instruction) {
     return duplicateFilter.count(
@@ -74,16 +74,16 @@ bool BFSearcher::wasAddedEarlier(BFSearchState state) {
   return false;
 }
 
-void BFSearcher::rememberAsAdded(BFSearchState state) {
+void DijSearcher::rememberAsAdded(DijSearchState state) {
   // Only store instructions, that are the first in their basic block
   if (&(state.instruction->getParent()->front()) == &*state.instruction) {
     duplicateFilter.insert(std::make_pair(&*state.instruction, state.stack));
   }
 }
 
-void BFSearcher::doSingleSearchIteration() {
+void DijSearcher::doSingleSearchIteration() {
   // Remove the first state from the queue
-  BFSearchState curr = this->popFromSeachQueue();
+  DijSearchState curr = this->popFromSeachQueue();
 
   // nullptr indicates an invalid instruction
   assert(&*curr.instruction != NULL);
@@ -98,7 +98,7 @@ void BFSearcher::doSingleSearchIteration() {
     // If it is a function, that can acutally be called
     if (succ) {
       // Avoid recursions
-      BFStackEntry next(curr.instruction);
+      DijStackEntry next(curr.instruction);
       if (!curr.doesIntroduceRecursion(next)) {
         // Add the current call instruction to the stack
         curr.stack.push_back(next);
@@ -117,7 +117,7 @@ void BFSearcher::doSingleSearchIteration() {
     // Check, if we have any point to return to
     if (!curr.stack.empty()) {
       // Extract the top stack frame
-      BFStackEntry gobackto = curr.stack.back();
+      DijStackEntry gobackto = curr.stack.back();
       // and remove it from the stack
       curr.stack.pop_back();
 
