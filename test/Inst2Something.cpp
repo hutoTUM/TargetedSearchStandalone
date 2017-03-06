@@ -1,5 +1,6 @@
 #include "../external/doctest.h"
 #include "../include/strat/Inst2ReturnSearcher.h"
+#include "../include/strat/Inst2AssertFailSearcher.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Instruction.h"
@@ -9,7 +10,7 @@
 #include "llvm/Support/SourceMgr.h"
 
 llvm::Instruction* prepareTestCase(llvm::StringRef filename,
-                                   llvm::StringRef entryfunction) {
+                                   llvm::StringRef entryfunction = "main") {
   llvm::SMDiagnostic Err;
   llvm::Module* module =
       llvm::ParseIRFile(filename, Err, llvm::getGlobalContext());
@@ -78,7 +79,7 @@ TEST_CASE(
     "Count the minimal number of instructions to the final return "
     "more complex real world test cases") {
   SUBCASE("Simple recursion with fibonacci") {
-    Inst2ReturnSearcher s(prepareTestCase("bin/examples/fibonacci.bc", "main"));
+    Inst2ReturnSearcher s(prepareTestCase("bin/examples/fibonacci.bc"));
     CHECK(s.searchForMinimalDistance() == 5);
   }
 
@@ -88,13 +89,22 @@ TEST_CASE(
   }
 
   SUBCASE("Bigger callstack with divisible") {
-    Inst2ReturnSearcher s(prepareTestCase("bin/examples/divisible.bc", "main"));
+    Inst2ReturnSearcher s(prepareTestCase("bin/examples/divisible.bc"));
     CHECK(s.searchForMinimalDistance() == 20);
   }
 
   SUBCASE("Control Flow Graph cannot be sorted topologically") {
     Inst2ReturnSearcher s(
-        prepareTestCase("bin/examples/doomcircle.bc", "main"));
+        prepareTestCase("bin/examples/doomcircle.bc"));
     CHECK(s.searchForMinimalDistance() == 12);
   }
+}
+
+TEST_CASE(
+    "Count the minimal number of instructions to assert failure "
+    "in bin/assert.bc") {
+
+  Inst2AssertFailSearcher s(
+    prepareTestCase("bin/examples/assert.bc"));
+  CHECK(s.searchForMinimalDistance() == 4);
 }
