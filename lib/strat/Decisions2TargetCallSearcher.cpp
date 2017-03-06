@@ -1,17 +1,11 @@
 #include "./../../include/strat/Decisions2TargetCallSearcher.h"
+#include "./../../include/helper.h"
+#include "llvm/ADT/StringRef.h"
 #include "llvm/IR/Instructions.h"
 
 
 bool Decisions2TargetCallSearcher::isTheTarget(DijSearchState state) {
-  // Check, if it is a call instruction
-  if (llvm::isa<llvm::CallInst>(state.instruction)) {
-    // Extract the called function
-    llvm::CallInst* call = llvm::cast<llvm::CallInst>(state.instruction);
-    llvm::Function* called = call->getCalledFunction();
-    return called != NULL &&
-           called->getName().str() == this->targetFunctionName;
-  }
-  return false;
+  return isCallToFunction(state.instruction, this->targetFunctionName);
 }
 
 uint Decisions2TargetCallSearcher::distanceToPass(llvm::Instruction* instr) {

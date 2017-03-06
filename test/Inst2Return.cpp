@@ -1,5 +1,6 @@
 #include "../external/doctest.h"
 #include "../include/strat/Inst2ReturnSearcher.h"
+#include "llvm/ADT/StringRef.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/LLVMContext.h"
@@ -7,8 +8,8 @@
 #include "llvm/IRReader/IRReader.h"
 #include "llvm/Support/SourceMgr.h"
 
-llvm::Instruction* prepareTestCase(std::string filename,
-                                   std::string entryfunction) {
+llvm::Instruction* prepareTestCase(llvm::StringRef filename,
+                                   llvm::StringRef entryfunction) {
   llvm::SMDiagnostic Err;
   llvm::Module* module =
       llvm::ParseIRFile(filename, Err, llvm::getGlobalContext());

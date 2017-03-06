@@ -1,12 +1,12 @@
 #ifndef DECISIONS2TARGETCALLSEARCHER_H_
 #define DECISIONS2TARGETCALLSEARCHER_H_
 
-#include <string>
+#include "llvm/ADT/StringRef.h"
 #include "./../DijSearcher.h"
 
 class Decisions2TargetCallSearcher : public DijSearcher {
  private:
-  std::string targetFunctionName;
+  llvm::StringRef targetFunctionName;
   static const uint maxDistance = 100;
 
   /**
@@ -22,13 +22,13 @@ class Decisions2TargetCallSearcher : public DijSearcher {
 
  public:
   Decisions2TargetCallSearcher(llvm::Instruction* start,
-                               std::string _targetFunctionName)
+                               llvm::StringRef _targetFunctionName)
       : DijSearcher(start), targetFunctionName(_targetFunctionName) { /* empty */
   }
 
   Decisions2TargetCallSearcher(llvm::Instruction* start,
                                std::list<llvm::Instruction*> stack,
-                               std::string _targetFunctionName)
+                               llvm::StringRef _targetFunctionName)
       : DijSearcher(start, stack),
         targetFunctionName(_targetFunctionName) { /* empty */
   }

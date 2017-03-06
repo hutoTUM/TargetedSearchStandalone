@@ -20,7 +20,7 @@ DijSearcher::DijSearcher(llvm::Instruction* start) {
 }
 
 DijSearcher::DijSearcher(llvm::Instruction* start,
-                       std::list<llvm::Instruction*> stack) {
+                         std::list<llvm::Instruction*> stack) {
   // Add the start instruction to the search queue with 0 distance so far
   // and everything that was stored on the stack so far
   addToSearchQueue(DijSearchState(start, 0, stack));
@@ -52,8 +52,8 @@ void DijSearcher::addToSearchQueue(DijSearchState state) {
 }
 
 void DijSearcher::enqueueInSearchQueue(DijSearchState oldState,
-                                      llvm::BasicBlock::iterator next,
-                                      std::deque<DijStackEntry> newStack) {
+                                       llvm::BasicBlock::iterator next,
+                                       std::deque<DijStackEntry> newStack) {
   addToSearchQueue(DijSearchState(
       next, oldState.distanceFromStart + distanceToPass(oldState.instruction),
       newStack));

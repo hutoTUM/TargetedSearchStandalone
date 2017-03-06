@@ -49,20 +49,20 @@ class DijSearchState {
   std::deque<DijStackEntry> stack;
 
   DijSearchState(llvm::BasicBlock::iterator _instruction,
-                uint _distanceFromStart)
+                 uint _distanceFromStart)
       : instruction(_instruction),
         distanceFromStart(_distanceFromStart) { /* empty */
   }
 
   DijSearchState(llvm::BasicBlock::iterator _instruction,
-                uint _distanceFromStart, std::deque<DijStackEntry> _stack)
+                 uint _distanceFromStart, std::deque<DijStackEntry> _stack)
       : instruction(_instruction),
         distanceFromStart(_distanceFromStart),
         stack(_stack) { /* empty */
   }
 
   DijSearchState(llvm::Instruction* _instruction, uint _distanceFromStart,
-                std::list<llvm::Instruction*> _stack);
+                 std::list<llvm::Instruction*> _stack);
 
   DijSearchState(llvm::Instruction* _instruction, uint _distanceFromStart)
       : instruction(getIteratorOnInstruction(_instruction)),

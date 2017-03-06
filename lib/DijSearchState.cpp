@@ -10,8 +10,8 @@
 
 
 DijSearchState::DijSearchState(llvm::Instruction* _instruction,
-                             uint _distanceFromStart,
-                             std::list<llvm::Instruction*> _stack)
+                               uint _distanceFromStart,
+                               std::list<llvm::Instruction*> _stack)
     : instruction(getIteratorOnInstruction(_instruction)),
       distanceFromStart(_distanceFromStart),
       stack() {
