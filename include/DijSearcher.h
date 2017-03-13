@@ -90,6 +90,6 @@ class DijSearcher {
   uint searchForMinimalDistance();
 };
 
-llvm::BasicBlock::iterator resolveCall(llvm::CallInst* call);
+llvm::BasicBlock::iterator resolveCall(llvm::BasicBlock::iterator iterOnCall);
 
 #endif  // DIJSEARCHER_H_

@@ -3,12 +3,12 @@
 #include <list>
 #include "./../include/DijSearchState.h"
 #include "./../include/helper.h"
+#include "llvm/Analysis/CFG.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Value.h"
-#include "llvm/Support/CFG.h"
 
 
 DijSearcher::DijSearcher(llvm::Instruction* start) {
@@ -55,7 +55,7 @@ void DijSearcher::enqueueInSearchQueue(DijSearchState oldState,
                                        llvm::BasicBlock::iterator next,
                                        std::deque<DijStackEntry> newStack) {
   addToSearchQueue(DijSearchState(
-      next, oldState.distanceFromStart + distanceToPass(oldState.instruction),
+      next, oldState.distanceFromStart + distanceToPass(&*oldState.instruction),
       newStack));
 }
 
@@ -91,12 +91,11 @@ void DijSearcher::doSingleSearchIteration() {
   if (llvm::isa<llvm::CallInst>(curr.instruction)) {
     // If call, increase stack and add to search queue
 
-    llvm::BasicBlock::iterator succ =
-        resolveCall(llvm::cast<llvm::CallInst>(curr.instruction));
+    // Try to resolve the function call
+    llvm::BasicBlock::iterator succ = resolveCall(curr.instruction);
 
-
-    // If it is a function, that can acutally be called
-    if (succ) {
+    // If the resolve was successfull
+    if (succ != curr.instruction) {
       // Avoid recursions
       DijStackEntry next(curr.instruction);
       if (!curr.doesIntroduceRecursion(next)) {
@@ -146,11 +145,17 @@ void DijSearcher::doSingleSearchIteration() {
 }
 
 /**
-* Resolves a llvm call operation and returns the first instruction
-* executed after the call. If the call cannot be resolved, it returns NULL
+* Resolves a llvm call operation and returns the first instruction executed
+* after the call. If the call cannot be resolved, it returns the call itself
 */
-llvm::BasicBlock::iterator resolveCall(llvm::CallInst* call) {
+llvm::BasicBlock::iterator resolveCall(llvm::BasicBlock::iterator iterOnCall) {
+  // Check if the iterator is a valid call
+  if (!llvm::isa<llvm::CallInst>(iterOnCall)) {
+    // Non-Calls cannot be resolved
+    return iterOnCall;
+  }
   // Extract the called function
+  llvm::CallInst* call = llvm::cast<llvm::CallInst>(iterOnCall);
   llvm::Function* called = call->getCalledFunction();
 
   // Check if the function is an external call
@@ -197,5 +202,5 @@ llvm::BasicBlock::iterator resolveCall(llvm::CallInst* call) {
     }
   }
 
-  return NULL;
+  return iterOnCall;
 }

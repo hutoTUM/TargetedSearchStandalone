@@ -3,10 +3,10 @@
 #include <deque>
 #include <list>
 #include "./../include/helper.h"
+#include "llvm/Analysis/CFG.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Instructions.h"
-#include "llvm/Support/CFG.h"
 
 
 DijSearchState::DijSearchState(llvm::Instruction* _instruction,

@@ -2,13 +2,11 @@
 #include <string>
 #include "../include/strat/Decisions2TargetCallSearcher.h"
 #include "../include/strat/Inst2ReturnSearcher.h"
+#include "./../include/helper.h"
 
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Instruction.h"
-#include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Module.h"
-#include "llvm/IRReader/IRReader.h"
-#include "llvm/Support/SourceMgr.h"
 #include "llvm/Support/raw_ostream.h"
 
 #pragma GCC diagnostic push
@@ -35,9 +33,7 @@ int main(int argc, char** argv) {
   llvm::cl::ParseCommandLineOptions(argc, argv);
 
   // Read the module file
-  llvm::SMDiagnostic Err;
-  llvm::Module* module =
-      llvm::ParseIRFile(BitcodeFilename, Err, llvm::getGlobalContext());
+  auto module = getModuleFromIRFile(BitcodeFilename);
   if (!module) {
     llvm::errs() << "Something is wrong with your bitcode file" << '\n';
     return -1;

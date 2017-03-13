@@ -5,7 +5,7 @@
 
 
 bool Decisions2TargetCallSearcher::isTheTarget(DijSearchState state) {
-  return isCallToFunction(state.instruction, this->targetFunctionName);
+  return isCallToFunction(&*state.instruction, this->targetFunctionName);
 }
 
 uint Decisions2TargetCallSearcher::distanceToPass(llvm::Instruction* instr) {

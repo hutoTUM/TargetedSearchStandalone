@@ -1,8 +1,13 @@
 #include "./../include/helper.h"
 #include "llvm/ADT/StringRef.h"
+#include "llvm/Config/llvm-config.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Instructions.h"
+#include "llvm/IR/LLVMContext.h"
+#include "llvm/IR/Module.h"
+#include "llvm/IRReader/IRReader.h"
+#include "llvm/Support/SourceMgr.h"
 
 
 llvm::BasicBlock::iterator getIteratorOnInstruction(llvm::Instruction* inst) {
@@ -30,3 +35,20 @@ bool isCallToFunction(llvm::Instruction* inst, llvm::StringRef funcName) {
   }
   return false;
 }
+
+llvm::LLVMContext context;
+llvm::SMDiagnostic Err;
+
+#if LLVM_VERSION_MAJOR > 3 || \
+    (LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 6)
+std::unique_ptr<llvm::Module> getModuleFromIRFile(std::string BitcodeFilename) {
+  std::unique_ptr<llvm::Module> module =
+      llvm::parseIRFile(BitcodeFilename, Err, context);
+  return module;
+}
+#else
+llvm::Module* getModuleFromIRFile(std::string BitcodeFilename) {
+  llvm::Module* module = llvm::ParseIRFile(BitcodeFilename, Err, context);
+  return module;
+}
+#endif

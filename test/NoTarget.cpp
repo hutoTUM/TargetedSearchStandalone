@@ -1,17 +1,14 @@
 #include "../external/doctest.h"
 #include "../include/strat/NoTargetSearcher.h"
+#include "./../include/helper.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Instruction.h"
-#include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Module.h"
-#include "llvm/IRReader/IRReader.h"
-#include "llvm/Support/SourceMgr.h"
 
-uint getIterationsInSearch(llvm::StringRef filename, llvm::StringRef entryfunction) {
-  llvm::SMDiagnostic Err;
-  llvm::Module* module =
-      llvm::ParseIRFile(filename, Err, llvm::getGlobalContext());
+uint getIterationsInSearch(llvm::StringRef filename,
+                           llvm::StringRef entryfunction) {
+  auto module = getModuleFromIRFile(filename);
   REQUIRE(module);
 
   llvm::Function* function = module->getFunction(entryfunction);

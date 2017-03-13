@@ -1,18 +1,29 @@
 ########################################
 # Define Variables
 ########################################
-LLVM_SRC_PATH ?= $$HOME/build/llvm
-LLVM_BUILD_PATH ?= $$HOME/build/llvm/Release
-LLVM_BIN_PATH ?= $(LLVM_BUILD_PATH)/bin
-LLVM_INCLUDES ?= -I$(LLVM_SRC_PATH)/include -I$(LLVM_BUILD_PATH)/include
+# Some constants for default clang location
+LLVM_INCLUDES ?=
+LLVM_CONFIG ?= /usr/bin/llvm-config
+CLANG ?= /usr/bin/clang
 
+# If a self compiled version of llvm should be used
+ifdef LLVM_SRC_PATH
+LLVM_BUILD_PATH ?= $(LLVM_SRC_PATH)/Release
+LLVM_BIN_PATH ?= $(LLVM_BUILD_PATH)/bin
+
+LLVM_INCLUDES = -I$(LLVM_SRC_PATH)/include -I$(LLVM_BUILD_PATH)/include
+LLVM_CONFIG = $(LLVM_BIN_PATH)/llvm-config
+CLANG = $(LLVM_BIN_PATH)/clang
+endif
+
+# Some more variables for the compiler
 CXX ?= g++
 CXXFLAGS ?= -Wall -Wextra -Wpedantic
 CXXFLAGS_LLVM ?= -std=c++11 $(LLVM_INCLUDES)
 
 LLVM_CONFIG_COMMAND = \
-		`$(LLVM_BIN_PATH)/llvm-config --cxxflags --libs` \
-		`$(LLVM_BIN_PATH)/llvm-config --ldflags`
+		`$(LLVM_CONFIG) --cxxflags --libs` \
+		`$(LLVM_CONFIG) --ldflags`
 
 # small helper to build the directory of the current target
 MAKETARGETDIR = @mkdir -p $(@D)
@@ -20,7 +31,6 @@ MAKETARGETDIR = @mkdir -p $(@D)
 MAKEBINARY = $(CXX) $(CXXFLAGS) $(CXXFLAGS_LLVM) $^ $(LLVM_CONFIG_COMMAND) -o $@
 
 # Find all the source files
-#DELETE# MAINS = src/main.cpp src/main-notarget.cpp
 CPPS = $(wildcard lib/*.cpp) $(wildcard lib/**/*.cpp)
 OBJS = $(addprefix bin/,$(CPPS:.cpp=.o))
 
@@ -36,7 +46,7 @@ EXMPBC = $(addprefix bin/,$(EXMPCS:.c=.bc))
 ########################################
 # Common aliases
 ########################################
-all: bin/decisions bin/notarget examples
+all: bin/llvm-version bin/decisions bin/notarget examples
 examples: $(EXMPBC)
 
 
@@ -52,7 +62,7 @@ bin/%: bin/main/%.o $(OBJS)
 
 bin/examples/%.bc: examples/%.c
 	$(MAKETARGETDIR)
-	$(LLVM_BIN_PATH)/clang -c -emit-llvm -O3 -g $^ -o $@
+	$(CLANG) -c -emit-llvm -O3 -g $^ -o $@
 
 bin/test/%.o: test/%.cpp
 	$(MAKETARGETDIR)
@@ -79,11 +89,13 @@ clean:
 	@ git checkout bin/.gitignore
 
 .PHONY: test
-test: bin/testsuite examples
+test: bin/testsuite ./bin/llvm-version examples
+	@ ./bin/llvm-version
 	./bin/testsuite
 
 .PHONY: valgrind
-valgrind: bin/testsuite examples
+valgrind: bin/testsuite ./bin/llvm-version examples
+	@ ./bin/llvm-version
 	valgrind ./bin/testsuite
 
 .PHONY: format
