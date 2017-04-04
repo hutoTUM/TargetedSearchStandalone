@@ -1,6 +1,4 @@
 #include "./../include/DijSearcher.h"
-#include <deque>
-#include <list>
 #include "./../include/DijSearchState.h"
 #include "./../include/helper.h"
 #include "llvm/Analysis/CFG.h"
@@ -9,10 +7,11 @@
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Value.h"
+#include <deque>
+#include <list>
 
-
-DijSearcher::DijSearcher(StratDistance* stratDistance, StratTarget* stratTarget,
-                         llvm::Instruction* start) {
+DijSearcher::DijSearcher(StratDistance *stratDistance, StratTarget *stratTarget,
+                         llvm::Instruction *start) {
   // Store the strategyies
   this->stratDistance = stratDistance;
   this->stratTarget = stratTarget;
@@ -24,9 +23,9 @@ DijSearcher::DijSearcher(StratDistance* stratDistance, StratTarget* stratTarget,
   this->iterationCounter = 0;
 }
 
-DijSearcher::DijSearcher(StratDistance* stratDistance, StratTarget* stratTarget,
-                         llvm::Instruction* start,
-                         std::list<llvm::Instruction*> stack) {
+DijSearcher::DijSearcher(StratDistance *stratDistance, StratTarget *stratTarget,
+                         llvm::Instruction *start,
+                         std::list<llvm::Instruction *> stack) {
   // Store the strategyies
   this->stratDistance = stratDistance;
   this->stratTarget = stratTarget;
@@ -138,7 +137,7 @@ void DijSearcher::doSingleSearchIteration() {
     // If terminal instruction, add all successor
 
     // Get access to the current block
-    llvm::BasicBlock* currblock = curr.instruction->getParent();
+    llvm::BasicBlock *currblock = curr.instruction->getParent();
 
     // Iterate over all the successors
     for (llvm::succ_iterator sit = llvm::succ_begin(currblock),
@@ -165,8 +164,8 @@ llvm::BasicBlock::iterator resolveCall(llvm::BasicBlock::iterator iterOnCall) {
     return iterOnCall;
   }
   // Extract the called function
-  llvm::CallInst* call = llvm::cast<llvm::CallInst>(iterOnCall);
-  llvm::Function* called = call->getCalledFunction();
+  llvm::CallInst *call = llvm::cast<llvm::CallInst>(iterOnCall);
+  llvm::Function *called = call->getCalledFunction();
 
   // Check if the function is an external call
   if (called && !called->isIntrinsic() && !called->empty()) {
@@ -179,12 +178,12 @@ llvm::BasicBlock::iterator resolveCall(llvm::BasicBlock::iterator iterOnCall) {
   if (llvm::isa<llvm::LoadInst>(call->getCalledValue()) &&
       call->getParent()->getParent()->getName() == "__uClibc_main") {
     // Extract the type of the function allocated in the called pointer
-    llvm::LoadInst* load = llvm::cast<llvm::LoadInst>(call->getCalledValue());
-    llvm::AllocaInst* alloca =
+    llvm::LoadInst *load = llvm::cast<llvm::LoadInst>(call->getCalledValue());
+    llvm::AllocaInst *alloca =
         llvm::cast<llvm::AllocaInst>(load->getPointerOperand());
-    llvm::PointerType* inptr =
+    llvm::PointerType *inptr =
         llvm::cast<llvm::PointerType>(alloca->getAllocatedType());
-    llvm::FunctionType* infnc =
+    llvm::FunctionType *infnc =
         llvm::cast<llvm::FunctionType>(inptr->getElementType());
 
     // Check, if the inner function has the signature of a main function
@@ -194,7 +193,7 @@ llvm::BasicBlock::iterator resolveCall(llvm::BasicBlock::iterator iterOnCall) {
         infnc->getParamType(2)->isPointerTy()) {
       // Extract actual content of the parameter for __uClibc_main
 
-      llvm::CallInst* call2uclibc =
+      llvm::CallInst *call2uclibc =
           llvm::cast<llvm::CallInst>(call->getParent()
                                          ->getParent()
                                          ->getParent()
@@ -202,10 +201,10 @@ llvm::BasicBlock::iterator resolveCall(llvm::BasicBlock::iterator iterOnCall) {
                                          ->getEntryBlock()
                                          .begin());
       if (call2uclibc->getNumArgOperands() == 7) {
-        llvm::Value* probe = call2uclibc->getArgOperand(0)->stripPointerCasts();
+        llvm::Value *probe = call2uclibc->getArgOperand(0)->stripPointerCasts();
         if (llvm::isa<llvm::Function>(probe)) {
           // And return a jump to the first instruction of the user main
-          llvm::Function* usermain = llvm::cast<llvm::Function>(probe);
+          llvm::Function *usermain = llvm::cast<llvm::Function>(probe);
           return usermain->front().begin();
         }
       }

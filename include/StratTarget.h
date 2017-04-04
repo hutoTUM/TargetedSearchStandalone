@@ -5,12 +5,12 @@
 #include "llvm/ADT/StringRef.h"
 
 class StratTarget {
- public:
+public:
   virtual bool isTheTarget(DijSearchState state) = 0;
 };
 
 class CallToSpecificFunction : public StratTarget {
- public:
+public:
   llvm::StringRef targetFunctionName;
   explicit CallToSpecificFunction(llvm::StringRef _targetFunctionName)
       : targetFunctionName(_targetFunctionName){/* empty */};
@@ -18,18 +18,18 @@ class CallToSpecificFunction : public StratTarget {
 };
 
 class FailingAssert : public StratTarget {
- public:
+public:
   bool isTheTarget(DijSearchState state);
 };
 
 class FinalReturn : public StratTarget {
- public:
+public:
   bool isTheTarget(DijSearchState state);
 };
 
 class NoTarget : public StratTarget {
- public:
+public:
   bool isTheTarget(DijSearchState state);
 };
 
-#endif  // STRATTARGET_H_
+#endif // STRATTARGET_H_

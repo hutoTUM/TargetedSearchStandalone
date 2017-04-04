@@ -18,5 +18,4 @@ static inline uint64_t getCurrentTimeInMilliSeconds() {
   return (getCurrentTimeInMicroSeconds() / 1000.0 + 0.5);
 }
 
-
-#endif  // TIMIMG_H_
+#endif // TIMIMG_H_

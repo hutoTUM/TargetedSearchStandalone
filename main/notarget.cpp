@@ -1,6 +1,3 @@
-#include <stdint.h>
-#include <iostream>
-#include <string>
 #include "./../include/DijSearcher.h"
 #include "./../include/StratDistance.h"
 #include "./../include/StratTarget.h"
@@ -10,23 +7,25 @@
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/Module.h"
 #include "llvm/Support/raw_ostream.h"
+#include <iostream>
+#include <stdint.h>
+#include <string>
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmisleading-indentation"
 #include "llvm/Support/CommandLine.h"
 #pragma GCC diagnostic pop
 
-
 llvm::cl::opt<std::string> BitcodeFilename(llvm::cl::Positional,
                                            llvm::cl::desc("<input.bc>"),
                                            llvm::cl::Required);
 
-llvm::cl::opt<std::string> EntryFunction(
-    "entry", llvm::cl::desc("Name of the function used as entry point"),
-    llvm::cl::init("main"));
+llvm::cl::opt<std::string>
+    EntryFunction("entry",
+                  llvm::cl::desc("Name of the function used as entry point"),
+                  llvm::cl::init("main"));
 
-
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
   // Parse the command line arguments
   llvm::cl::ParseCommandLineOptions(argc, argv);
 
@@ -38,7 +37,7 @@ int main(int argc, char** argv) {
   }
 
   // Get the entry function
-  llvm::Function* entry = module->getFunction(EntryFunction);
+  llvm::Function *entry = module->getFunction(EntryFunction);
   if (!entry) {
     llvm::errs() << "Entry function " << EntryFunction << " not found" << '\n';
     return -1;

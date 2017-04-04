@@ -11,26 +11,24 @@
 #include "llvm/IRReader/IRReader.h"
 #include "llvm/Support/SourceMgr.h"
 
-llvm::Instruction* getEntryPoint(llvm::Module* module,
+llvm::Instruction *getEntryPoint(llvm::Module *module,
                                  llvm::StringRef entryfunction = "main") {
-  llvm::Function* function = module->getFunction(entryfunction);
+  llvm::Function *function = module->getFunction(entryfunction);
   REQUIRE(function);
 
-  llvm::Instruction* start = &(function->front().front());
+  llvm::Instruction *start = &(function->front().front());
   REQUIRE(start);
 
   return start;
 }
 
-llvm::Instruction* getEntryPoint(std::unique_ptr<llvm::Module>& module,
+llvm::Instruction *getEntryPoint(std::unique_ptr<llvm::Module> &module,
                                  llvm::StringRef entryfunction = "main") {
   return getEntryPoint(module.get(), entryfunction);
 }
 
-
-TEST_CASE(
-    "Count the minimal number of instructions to the final return "
-    "in bin/examples/blocks.bc") {
+TEST_CASE("Count the minimal number of instructions to the final return "
+          "in bin/examples/blocks.bc") {
   auto module = getModuleFromIRFile("bin/examples/blocks.bc");
   REQUIRE(module);
 
@@ -51,9 +49,9 @@ TEST_CASE(
 
   SUBCASE("Target instruction has distance 0") {
     // Read the last instruction of the basic block
-    llvm::Function* function = module->getFunction("oneblock");
+    llvm::Function *function = module->getFunction("oneblock");
     REQUIRE(function);
-    llvm::Instruction* last = &(function->front().back());
+    llvm::Instruction *last = &(function->front().back());
     REQUIRE(last);
 
     DijSearcher s(&stratDistance, &stratTarget, last);
@@ -61,9 +59,8 @@ TEST_CASE(
   }
 }
 
-TEST_CASE(
-    "Count the minimal number of instructions to the final return "
-    "in bin/examples/callstack.bc") {
+TEST_CASE("Count the minimal number of instructions to the final return "
+          "in bin/examples/callstack.bc") {
   auto module = getModuleFromIRFile("bin/examples/callstack.bc");
   REQUIRE(module);
 
@@ -83,9 +80,8 @@ TEST_CASE(
   }
 }
 
-TEST_CASE(
-    "Count the minimal number of instructions to the final return "
-    "more complex real world test cases") {
+TEST_CASE("Count the minimal number of instructions to the final return "
+          "more complex real world test cases") {
   CountInstructions stratDistance{};
   FinalReturn stratTarget{};
 
@@ -117,9 +113,8 @@ TEST_CASE(
   }
 }
 
-TEST_CASE(
-    "Count the minimal number of instructions to assert failure "
-    "in bin/assert.bc") {
+TEST_CASE("Count the minimal number of instructions to assert failure "
+          "in bin/assert.bc") {
   auto module = getModuleFromIRFile("bin/examples/assert.bc");
   REQUIRE(module);
 

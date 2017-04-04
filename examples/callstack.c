@@ -1,8 +1,6 @@
 int catchme(int i);
 
-__attribute__((noinline)) int plus42(int i) {
-  return i + 42;
-}
+__attribute__((noinline)) int plus42(int i) { return i + 42; }
 
 __attribute__((noinline)) int abs42(int i) {
   if (i < 42) {

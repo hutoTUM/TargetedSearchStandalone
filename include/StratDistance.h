@@ -5,18 +5,18 @@
 #include "llvm/IR/InstrTypes.h"
 
 class StratDistance {
- public:
-  virtual uint distanceToPass(llvm::Instruction* instr) = 0;
+public:
+  virtual uint distanceToPass(llvm::Instruction *instr) = 0;
 };
 
 class CountInstructions : public StratDistance {
- public:
-  uint distanceToPass(llvm::Instruction* instr);
+public:
+  uint distanceToPass(llvm::Instruction *instr);
 };
 
 class CountDecisions : public StratDistance {
- public:
-  uint distanceToPass(llvm::Instruction* instr);
+public:
+  uint distanceToPass(llvm::Instruction *instr);
 };
 
-#endif  // STRATDISTANCE_H_
+#endif // STRATDISTANCE_H_

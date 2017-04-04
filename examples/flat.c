@@ -5,6 +5,4 @@ __attribute__((noinline)) int flat(int i) {
   return catchme(i);
 }
 
-int main(int argc, char** argv) {
-  return flat(argc);
-}
+int main(int argc, char **argv) { return flat(argc); }

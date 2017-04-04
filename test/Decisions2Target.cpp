@@ -13,10 +13,10 @@ uint executeSearchRun(llvm::StringRef filename, llvm::StringRef entryfunction,
   auto module = getModuleFromIRFile(filename);
   REQUIRE(module);
 
-  llvm::Function* function = module->getFunction(entryfunction);
+  llvm::Function *function = module->getFunction(entryfunction);
   REQUIRE(function);
 
-  llvm::Instruction* start = &(function->front().front());
+  llvm::Instruction *start = &(function->front().front());
   REQUIRE(start);
 
   CountDecisions stratDistance{};
@@ -25,7 +25,6 @@ uint executeSearchRun(llvm::StringRef filename, llvm::StringRef entryfunction,
 
   return s.searchForMinimalDistance();
 }
-
 
 TEST_CASE("Count the minimal number of decisions to target function call") {
   SUBCASE("Target function is in the same block") {

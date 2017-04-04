@@ -13,10 +13,10 @@ uint getIterationsInSearch(llvm::StringRef filename,
   auto module = getModuleFromIRFile(filename);
   REQUIRE(module);
 
-  llvm::Function* function = module->getFunction(entryfunction);
+  llvm::Function *function = module->getFunction(entryfunction);
   REQUIRE(function);
 
-  llvm::Instruction* start = &(function->front().front());
+  llvm::Instruction *start = &(function->front().front());
   REQUIRE(start);
 
   CountInstructions stratDistance{};
@@ -27,7 +27,6 @@ uint getIterationsInSearch(llvm::StringRef filename,
 
   return s.iterationCounter;
 }
-
 
 TEST_CASE("Check, if the search hung up in infinite queues") {
   // the limits might be a little generous, but loops break them anyway

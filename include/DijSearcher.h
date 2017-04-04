@@ -5,13 +5,13 @@
 #include "./StratDistance.h"
 #include "./StratTarget.h"
 
+#include "llvm/IR/BasicBlock.h"
 #include <deque>
 #include <list>
 #include <queue>
 #include <set>
 #include <utility>
 #include <vector>
-#include "llvm/IR/BasicBlock.h"
 
 /**
  * Dijkstra's algorithm traversing the whole llvm bitcode looking for the
@@ -20,16 +20,16 @@
  * implementing the strategy for a lot of different search types.
  */
 class DijSearcher {
- private:
-  StratDistance* stratDistance;
-  StratTarget* stratTarget;
+private:
+  StratDistance *stratDistance;
+  StratTarget *stratTarget;
 
   std::priority_queue<DijSearchState, std::vector<DijSearchState>,
                       std::greater<DijSearchState> >
       searchqueue;
 
   // This data structure is ugly as hell, but is there any better way?
-  std::set<std::pair<llvm::Instruction*, std::deque<DijStackEntry> > >
+  std::set<std::pair<llvm::Instruction *, std::deque<DijStackEntry> > >
       duplicateFilter;
 
   // Some variables to avoid extreme long search runs
@@ -82,17 +82,17 @@ class DijSearcher {
    * Determine the weight of the current instruction, that is added to the
    * overall distance, when passing this instruction.
    */
-  uint distanceToPass(llvm::Instruction* instr) {
+  uint distanceToPass(llvm::Instruction *instr) {
     return stratDistance->distanceToPass(instr);
   };
 
- public:
+public:
   uint iterationCounter;
 
-  DijSearcher(StratDistance* stratDistance, StratTarget* stratTarget,
-              llvm::Instruction* start);
-  DijSearcher(StratDistance* stratDistance, StratTarget* stratTarget,
-              llvm::Instruction* start, std::list<llvm::Instruction*> stack);
+  DijSearcher(StratDistance *stratDistance, StratTarget *stratTarget,
+              llvm::Instruction *start);
+  DijSearcher(StratDistance *stratDistance, StratTarget *stratTarget,
+              llvm::Instruction *start, std::list<llvm::Instruction *> stack);
 
   /**
    * Runs a search for the minimal distance to the target. If the target is
@@ -103,4 +103,4 @@ class DijSearcher {
 
 llvm::BasicBlock::iterator resolveCall(llvm::BasicBlock::iterator iterOnCall);
 
-#endif  // DIJSEARCHER_H_
+#endif // DIJSEARCHER_H_
