@@ -16,9 +16,12 @@ Possible distance measures are:
 * the number of decisions taken
 * any complex heuristic that you can think of using positive integers
 
-For implementing your own measures/targets, just inherit from the abstract DijSearcher class.
+For implementing your own measures/targets, just add new inheritances for the StratDistance/StratTarget class.
 
 ## Build instructions
+This project heavily relies on [LLVM](http://llvm.org/).
+So before doing anything install LLVM on your machine or build it on your own from its sources.
+
 ```
 make all test
 ```

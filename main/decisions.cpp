@@ -1,7 +1,8 @@
 #include <iostream>
 #include <string>
-#include "../include/strat/Decisions2TargetCallSearcher.h"
-#include "../include/strat/Inst2ReturnSearcher.h"
+#include "./../include/DijSearcher.h"
+#include "./../include/StratDistance.h"
+#include "./../include/StratTarget.h"
 #include "./../include/helper.h"
 
 #include "llvm/IR/Function.h"
@@ -47,7 +48,10 @@ int main(int argc, char** argv) {
   }
 
   if (TargetFunction.empty()) {
-    Inst2ReturnSearcher s(&(entry->front().front()));
+    CountInstructions stratDistance{};
+    FinalReturn stratTarget{};
+    DijSearcher s(&stratDistance, &stratTarget, &(entry->front().front()));
+
     llvm::outs() << "Minimal Instruction from " << EntryFunction
                  << " to final return: " << s.searchForMinimalDistance()
                  << '\n';
@@ -60,7 +64,9 @@ int main(int argc, char** argv) {
       return -1;
     }
 
-    Decisions2TargetCallSearcher s(&(entry->front().front()), TargetFunction);
+    CountDecisions stratDistance{};
+    CallToSpecificFunction stratTarget{TargetFunction};
+    DijSearcher s(&stratDistance, &stratTarget, &(entry->front().front()));
 
     llvm::outs() << "Minimal Decisions from " << EntryFunction << " to call of "
                  << TargetFunction << ": " << s.searchForMinimalDistance()

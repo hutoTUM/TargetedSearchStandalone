@@ -1,14 +1,13 @@
-#include "./../../include/strat/Decisions2TargetCallSearcher.h"
-#include "./../../include/helper.h"
-#include "llvm/ADT/StringRef.h"
-#include "llvm/IR/Instructions.h"
+#include "./../include/StratDistance.h"
+#include "llvm/IR/InstrTypes.h"
+#include "llvm/IR/Instruction.h"
 
-
-bool Decisions2TargetCallSearcher::isTheTarget(DijSearchState state) {
-  return isCallToFunction(&*state.instruction, this->targetFunctionName);
+uint CountInstructions::distanceToPass(llvm::Instruction* /*instr*/) {
+  // Basically everything encrease the distance by one
+  return 1;
 }
 
-uint Decisions2TargetCallSearcher::distanceToPass(llvm::Instruction* instr) {
+uint CountDecisions::distanceToPass(llvm::Instruction* instr) {
   // Check, if it is a terminator instruction
   if (llvm::isa<llvm::TerminatorInst>(instr)) {
     // Get it as an terminator instruction

@@ -1,8 +1,10 @@
 #include <stdint.h>
 #include <iostream>
 #include <string>
+#include "./../include/DijSearcher.h"
+#include "./../include/StratDistance.h"
+#include "./../include/StratTarget.h"
 #include "./../include/helper.h"
-#include "./../include/strat/NoTargetSearcher.h"
 #include "./../include/timing.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Instruction.h"
@@ -44,7 +46,9 @@ int main(int argc, char** argv) {
 
   // Five repeats to avoid outlayers
   for (int i = 0; i < 5; i++) {
-    NoTargetSearcher s(&(entry->front().front()));
+    CountInstructions stratDistance{};
+    NoTarget stratTarget{};
+    DijSearcher s(&stratDistance, &stratTarget, &(entry->front().front()));
 
     uint64_t start = getCurrentTimeInMilliSeconds();
     s.searchForMinimalDistance();

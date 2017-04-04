@@ -19,7 +19,7 @@ endif
 # Some more variables for the compiler
 CXX ?= g++
 CXXFLAGS ?= -Wall -Wextra -Wpedantic
-CXXFLAGS_LLVM ?= -std=c++11 $(LLVM_INCLUDES)
+CXXFLAGS_LLVM ?= $(LLVM_INCLUDES)
 
 LLVM_CONFIG_COMMAND = \
 		`$(LLVM_CONFIG) --cxxflags --libs` \

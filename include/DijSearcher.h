@@ -1,7 +1,9 @@
 #ifndef DIJSEARCHER_H_
 #define DIJSEARCHER_H_
 
-#include "./../include/DijSearchState.h"
+#include "./DijSearchState.h"
+#include "./StratDistance.h"
+#include "./StratTarget.h"
 
 #include <deque>
 #include <list>
@@ -19,6 +21,9 @@
  */
 class DijSearcher {
  private:
+  StratDistance* stratDistance;
+  StratTarget* stratTarget;
+
   std::priority_queue<DijSearchState, std::vector<DijSearchState>,
                       std::greater<DijSearchState> >
       searchqueue;
@@ -69,19 +74,25 @@ class DijSearcher {
   /**
    * Check, if the current state is the target of our search
    */
-  virtual bool isTheTarget(DijSearchState state) = 0;
+  bool isTheTarget(DijSearchState state) {
+    return stratTarget->isTheTarget(state);
+  };
 
   /**
    * Determine the weight of the current instruction, that is added to the
    * overall distance, when passing this instruction.
    */
-  virtual uint distanceToPass(llvm::Instruction* instr) = 0;
+  uint distanceToPass(llvm::Instruction* instr) {
+    return stratDistance->distanceToPass(instr);
+  };
 
  public:
   uint iterationCounter;
 
-  explicit DijSearcher(llvm::Instruction* start);
-  DijSearcher(llvm::Instruction* start, std::list<llvm::Instruction*> stack);
+  DijSearcher(StratDistance* stratDistance, StratTarget* stratTarget,
+              llvm::Instruction* start);
+  DijSearcher(StratDistance* stratDistance, StratTarget* stratTarget,
+              llvm::Instruction* start, std::list<llvm::Instruction*> stack);
 
   /**
    * Runs a search for the minimal distance to the target. If the target is

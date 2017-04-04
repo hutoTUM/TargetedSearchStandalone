@@ -1,5 +1,7 @@
-#include "../external/doctest.h"
-#include "../include/strat/NoTargetSearcher.h"
+#include "./../external/doctest.h"
+#include "./../include/DijSearcher.h"
+#include "./../include/StratDistance.h"
+#include "./../include/StratTarget.h"
 #include "./../include/helper.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/IR/Function.h"
@@ -17,7 +19,9 @@ uint getIterationsInSearch(llvm::StringRef filename,
   llvm::Instruction* start = &(function->front().front());
   REQUIRE(start);
 
-  NoTargetSearcher s(start);
+  CountInstructions stratDistance{};
+  NoTarget stratTarget{};
+  DijSearcher s(&stratDistance, &stratTarget, start);
 
   s.searchForMinimalDistance();
 

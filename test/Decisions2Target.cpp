@@ -1,5 +1,7 @@
-#include "../external/doctest.h"
-#include "../include/strat/Decisions2TargetCallSearcher.h"
+#include "./../external/doctest.h"
+#include "./../include/DijSearcher.h"
+#include "./../include/StratDistance.h"
+#include "./../include/StratTarget.h"
 #include "./../include/helper.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/IR/Function.h"
@@ -17,7 +19,10 @@ uint executeSearchRun(llvm::StringRef filename, llvm::StringRef entryfunction,
   llvm::Instruction* start = &(function->front().front());
   REQUIRE(start);
 
-  Decisions2TargetCallSearcher s(start, targetfunction);
+  CountDecisions stratDistance{};
+  CallToSpecificFunction stratTarget{targetfunction};
+  DijSearcher s(&stratDistance, &stratTarget, start);
+
   return s.searchForMinimalDistance();
 }
 

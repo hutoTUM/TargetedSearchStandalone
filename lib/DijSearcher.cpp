@@ -11,7 +11,12 @@
 #include "llvm/IR/Value.h"
 
 
-DijSearcher::DijSearcher(llvm::Instruction* start) {
+DijSearcher::DijSearcher(StratDistance* stratDistance, StratTarget* stratTarget,
+                         llvm::Instruction* start) {
+  // Store the strategyies
+  this->stratDistance = stratDistance;
+  this->stratTarget = stratTarget;
+
   // Add the start instruction to the search queue with 0 distance so far
   addToSearchQueue(DijSearchState(start, 0));
 
@@ -19,8 +24,13 @@ DijSearcher::DijSearcher(llvm::Instruction* start) {
   this->iterationCounter = 0;
 }
 
-DijSearcher::DijSearcher(llvm::Instruction* start,
+DijSearcher::DijSearcher(StratDistance* stratDistance, StratTarget* stratTarget,
+                         llvm::Instruction* start,
                          std::list<llvm::Instruction*> stack) {
+  // Store the strategyies
+  this->stratDistance = stratDistance;
+  this->stratTarget = stratTarget;
+
   // Add the start instruction to the search queue with 0 distance so far
   // and everything that was stored on the stack so far
   addToSearchQueue(DijSearchState(start, 0, stack));
