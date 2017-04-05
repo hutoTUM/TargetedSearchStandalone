@@ -1,9 +1,16 @@
 #include "./../include/DijSearchState.h"
 #include "./../include/helper.h"
+#if LLVM_VERSION_MAJOR < 3
+#include "llvm/BasicBlock.h"
+#include "llvm/Function.h"
+#include "llvm/Instructions.h"
+#include "llvm/Support/CFG.h"
+#else
 #include "llvm/Analysis/CFG.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Instructions.h"
+#endif
 #include <algorithm>
 #include <deque>
 #include <list>

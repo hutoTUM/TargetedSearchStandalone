@@ -5,9 +5,15 @@
 #include <iostream>
 #include <string>
 
+#if LLVM_VERSION_MAJOR < 3
+#include "llvm/Function.h"
+#include "llvm/Instruction.h"
+#include "llvm/Module.h"
+#else
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/Module.h"
+#endif
 #include "llvm/Support/raw_ostream.h"
 
 #pragma GCC diagnostic push
@@ -32,8 +38,15 @@ int main(int argc, char **argv) {
   // Parse the command line arguments
   llvm::cl::ParseCommandLineOptions(argc, argv);
 
-  // Read the module file
-  auto module = getModuleFromIRFile(BitcodeFilename);
+// Read the module file
+#if LLVM_VERSION_MAJOR > 3 ||                                                  \
+    (LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 6)
+  std::unique_ptr<llvm::Module> module;
+#else
+  llvm::Module *module;
+#endif
+
+  module = getModuleFromIRFile(BitcodeFilename);
   if (!module) {
     llvm::errs() << "Something is wrong with your bitcode file" << '\n';
     return -1;
@@ -47,8 +60,8 @@ int main(int argc, char **argv) {
   }
 
   if (TargetFunction.empty()) {
-    CountInstructions stratDistance{};
-    FinalReturn stratTarget{};
+    CountInstructions stratDistance;
+    FinalReturn stratTarget;
     DijSearcher s(&stratDistance, &stratTarget, &(entry->front().front()));
 
     llvm::outs() << "Minimal Instruction from " << EntryFunction
@@ -63,8 +76,8 @@ int main(int argc, char **argv) {
       return -1;
     }
 
-    CountDecisions stratDistance{};
-    CallToSpecificFunction stratTarget{TargetFunction};
+    CountDecisions stratDistance;
+    CallToSpecificFunction stratTarget(TargetFunction);
     DijSearcher s(&stratDistance, &stratTarget, &(entry->front().front()));
 
     llvm::outs() << "Minimal Decisions from " << EntryFunction << " to call of "

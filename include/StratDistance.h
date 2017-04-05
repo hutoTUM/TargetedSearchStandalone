@@ -1,8 +1,14 @@
 #ifndef STRATDISTANCE_H_
 #define STRATDISTANCE_H_
 
+#include "llvm/Config/llvm-config.h"
+#if LLVM_VERSION_MAJOR < 3
+#include "llvm/BasicBlock.h"
+#include "llvm/InstrTypes.h"
+#else
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/InstrTypes.h"
+#endif
 
 class StratDistance {
 public:

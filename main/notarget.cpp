@@ -3,9 +3,15 @@
 #include "./../include/StratTarget.h"
 #include "./../include/helper.h"
 #include "./../include/timing.h"
+#if LLVM_VERSION_MAJOR < 3
+#include "llvm/Function.h"
+#include "llvm/Instruction.h"
+#include "llvm/Module.h"
+#else
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/Module.h"
+#endif
 #include "llvm/Support/raw_ostream.h"
 #include <iostream>
 #include <stdint.h>
@@ -29,8 +35,14 @@ int main(int argc, char **argv) {
   // Parse the command line arguments
   llvm::cl::ParseCommandLineOptions(argc, argv);
 
-  // Read the module file
-  auto module = getModuleFromIRFile(BitcodeFilename);
+// Read the module file
+#if LLVM_VERSION_MAJOR > 3 ||                                                  \
+    (LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 6)
+  std::unique_ptr<llvm::Module> module;
+#else
+  llvm::Module *module;
+#endif
+  module = getModuleFromIRFile(BitcodeFilename);
   if (!module) {
     llvm::errs() << "Something is wrong with your bitcode file" << '\n';
     return -1;
@@ -45,8 +57,8 @@ int main(int argc, char **argv) {
 
   // Five repeats to avoid outlayers
   for (int i = 0; i < 5; i++) {
-    CountInstructions stratDistance{};
-    NoTarget stratTarget{};
+    CountInstructions stratDistance;
+    NoTarget stratTarget;
     DijSearcher s(&stratDistance, &stratTarget, &(entry->front().front()));
 
     uint64_t start = getCurrentTimeInMilliSeconds();

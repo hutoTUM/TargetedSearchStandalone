@@ -4,13 +4,25 @@
 #include "./../include/StratTarget.h"
 #include "./../include/helper.h"
 #include "llvm/ADT/StringRef.h"
+#if LLVM_VERSION_MAJOR < 3
+#include "llvm/Function.h"
+#include "llvm/Instruction.h"
+#include "llvm/Module.h"
+#else
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/Module.h"
+#endif
 
 uint executeSearchRun(llvm::StringRef filename, llvm::StringRef entryfunction,
                       llvm::StringRef targetfunction) {
-  auto module = getModuleFromIRFile(filename);
+#if LLVM_VERSION_MAJOR > 3 ||                                                  \
+    (LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 6)
+  std::unique_ptr<llvm::Module> module;
+#else
+  llvm::Module *module;
+#endif
+  module = getModuleFromIRFile(filename);
   REQUIRE(module);
 
   llvm::Function *function = module->getFunction(entryfunction);
@@ -19,8 +31,8 @@ uint executeSearchRun(llvm::StringRef filename, llvm::StringRef entryfunction,
   llvm::Instruction *start = &(function->front().front());
   REQUIRE(start);
 
-  CountDecisions stratDistance{};
-  CallToSpecificFunction stratTarget{targetfunction};
+  CountDecisions stratDistance;
+  CallToSpecificFunction stratTarget(targetfunction);
   DijSearcher s(&stratDistance, &stratTarget, start);
 
   return s.searchForMinimalDistance();

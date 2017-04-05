@@ -1,6 +1,11 @@
 #include "./../include/StratDistance.h"
+#if LLVM_VERSION_MAJOR < 3
+#include "llvm/InstrTypes.h"
+#include "llvm/Instruction.h"
+#else
 #include "llvm/IR/InstrTypes.h"
 #include "llvm/IR/Instruction.h"
+#endif
 
 uint CountInstructions::distanceToPass(llvm::Instruction * /*instr*/) {
   // Basically everything encrease the distance by one

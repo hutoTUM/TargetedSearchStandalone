@@ -5,7 +5,11 @@
 #include "./StratDistance.h"
 #include "./StratTarget.h"
 
+#if LLVM_VERSION_MAJOR < 3
+#include "llvm/BasicBlock.h"
+#else
 #include "llvm/IR/BasicBlock.h"
+#endif
 #include <deque>
 #include <list>
 #include <queue>

@@ -2,9 +2,15 @@
 #define DIJSEARCHSTATE_H_
 
 #include "./helper.h"
+#if LLVM_VERSION_MAJOR < 3
+#include "llvm/BasicBlock.h"
+#include "llvm/Function.h"
+#include "llvm/Instructions.h"
+#else
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Instructions.h"
+#endif
 #include <deque>
 #include <list>
 #include <queue>

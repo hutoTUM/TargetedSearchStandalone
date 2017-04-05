@@ -1,12 +1,21 @@
 #include "./../include/helper.h"
-#include "llvm/ADT/StringRef.h"
-#include "llvm/Config/llvm-config.h"
+#if LLVM_VERSION_MAJOR < 3
+#include "llvm/BasicBlock.h"
+#include "llvm/Function.h"
+#include "llvm/Instructions.h"
+#include "llvm/LLVMContext.h"
+#include "llvm/Module.h"
+#include "llvm/Support/IRReader.h"
+#else
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Module.h"
 #include "llvm/IRReader/IRReader.h"
+#endif
+#include "llvm/ADT/StringRef.h"
+#include "llvm/Config/llvm-config.h"
 #include "llvm/Support/SourceMgr.h"
 
 llvm::BasicBlock::iterator getIteratorOnInstruction(llvm::Instruction *inst) {

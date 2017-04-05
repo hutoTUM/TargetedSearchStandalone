@@ -1,12 +1,21 @@
 #include "./../include/DijSearcher.h"
 #include "./../include/DijSearchState.h"
 #include "./../include/helper.h"
+#if LLVM_VERSION_MAJOR < 3
+#include "llvm/BasicBlock.h"
+#include "llvm/Function.h"
+#include "llvm/Instructions.h"
+#include "llvm/Module.h"
+#include "llvm/Support/CFG.h"
+#include "llvm/Value.h"
+#else
 #include "llvm/Analysis/CFG.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Value.h"
+#endif
 #include <deque>
 #include <list>
 
@@ -179,11 +188,11 @@ llvm::BasicBlock::iterator resolveCall(llvm::BasicBlock::iterator iterOnCall) {
       call->getParent()->getParent()->getName() == "__uClibc_main") {
     // Extract the type of the function allocated in the called pointer
     llvm::LoadInst *load = llvm::cast<llvm::LoadInst>(call->getCalledValue());
-    llvm::AllocaInst *alloca =
+    const llvm::AllocaInst *alloca =
         llvm::cast<llvm::AllocaInst>(load->getPointerOperand());
-    llvm::PointerType *inptr =
+    const llvm::PointerType *inptr =
         llvm::cast<llvm::PointerType>(alloca->getAllocatedType());
-    llvm::FunctionType *infnc =
+    const llvm::FunctionType *infnc =
         llvm::cast<llvm::FunctionType>(inptr->getElementType());
 
     // Check, if the inner function has the signature of a main function

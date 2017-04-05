@@ -2,9 +2,15 @@
 #define HELPER_H_
 
 #include "llvm/Config/llvm-config.h"
+#if LLVM_VERSION_MAJOR < 3
+#include "llvm/BasicBlock.h"
+#include "llvm/Instructions.h"
+#include "llvm/Module.h"
+#else
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/Module.h"
+#endif
 #include <string>
 
 llvm::BasicBlock::iterator getIteratorOnInstruction(llvm::Instruction *inst);
