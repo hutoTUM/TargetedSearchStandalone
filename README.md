@@ -7,6 +7,7 @@ It provides a small interface, where own definitions of target instructions and 
 
 Possible targets are:
 * a call to a specific function
+* the end of a specific function
 * a failing assert statement
 * a specific line of code using debug information inside the bitcode
 * (for testing) no target at all to traverse the whole program

@@ -16,13 +16,7 @@
 
 uint executeSearchRun(llvm::StringRef filename, llvm::StringRef entryfunction,
                       llvm::StringRef targetfunction) {
-#if LLVM_VERSION_MAJOR > 3 ||                                                  \
-    (LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 6)
-  std::unique_ptr<llvm::Module> module;
-#else
-  llvm::Module *module;
-#endif
-  module = getModuleFromIRFile(filename);
+  auto module = getModuleFromIRFile(filename);
   REQUIRE(module);
 
   llvm::Function *function = module->getFunction(entryfunction);

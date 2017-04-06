@@ -17,6 +17,14 @@ public:
   bool isTheTarget(DijkstraState state);
 };
 
+class EndOfSpecificFunction : public StratTarget {
+public:
+  llvm::StringRef targetFunctionName;
+  explicit EndOfSpecificFunction(llvm::StringRef _targetFunctionName)
+      : targetFunctionName(_targetFunctionName){/* empty */};
+  bool isTheTarget(DijkstraState state);
+};
+
 class FailingAssert : public StratTarget {
 public:
   bool isTheTarget(DijkstraState state);

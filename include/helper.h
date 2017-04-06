@@ -20,6 +20,11 @@ llvm::BasicBlock::iterator getIteratorOnInstruction(llvm::Instruction *inst);
 */
 bool isCallToFunction(llvm::Instruction *inst, llvm::StringRef funcName);
 
+/**
+* Checks, whether an instruction is the last instruction in its function
+*/
+bool isLastInstructionInFunction(llvm::Instruction *inst);
+
 #if LLVM_VERSION_MAJOR > 3 ||                                                  \
     (LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 6)
 std::unique_ptr<llvm::Module> getModuleFromIRFile(std::string BitcodeFilename);

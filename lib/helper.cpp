@@ -44,6 +44,12 @@ bool isCallToFunction(llvm::Instruction *inst, llvm::StringRef funcName) {
   return false;
 }
 
+bool isLastInstructionInFunction(llvm::Instruction *inst) {
+  return llvm::isa<llvm::TerminatorInst>(inst) &&
+         (llvm::isa<llvm::ReturnInst>(inst) ||
+          llvm::isa<llvm::InvokeInst>(inst));
+}
+
 llvm::LLVMContext context;
 llvm::SMDiagnostic Err;
 

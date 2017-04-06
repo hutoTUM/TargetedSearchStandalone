@@ -123,3 +123,15 @@ TEST_CASE("Count the minimal number of instructions to assert failure "
 
   CHECK(s.searchForMinimalDistance() == 4);
 }
+
+TEST_CASE("Count the minimal number of instructions to assert failure "
+          "in bin/assert.bc") {
+  auto module = getModuleFromIRFile("bin/examples/branches.bc");
+  REQUIRE(module);
+
+  CountInstructions stratDistance{};
+  EndOfSpecificFunction stratTarget{"quarter"};
+  Dijkstra s(&stratDistance, &stratTarget, getEntryPoint(module, "quarter"));
+
+  CHECK(s.searchForMinimalDistance() == 4);
+}
