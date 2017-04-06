@@ -1,5 +1,5 @@
 #include "../external/doctest.h"
-#include "./../include/DijSearcher.h"
+#include "./../include/Dijkstra.h"
 #include "./../include/StratDistance.h"
 #include "./../include/StratTarget.h"
 #include "./../include/helper.h"
@@ -36,14 +36,13 @@ TEST_CASE("Count the minimal number of instructions to the final return "
   FinalReturn stratTarget{};
 
   SUBCASE("One block is passed completely") {
-    DijSearcher s(&stratDistance, &stratTarget,
-                  getEntryPoint(module, "oneblock"));
+    Dijkstra s(&stratDistance, &stratTarget, getEntryPoint(module, "oneblock"));
     CHECK(s.searchForMinimalDistance() == 6);
   }
 
   SUBCASE("Four blocks choose the shortest way") {
-    DijSearcher s(&stratDistance, &stratTarget,
-                  getEntryPoint(module, "fourblocks"));
+    Dijkstra s(&stratDistance, &stratTarget,
+               getEntryPoint(module, "fourblocks"));
     CHECK(s.searchForMinimalDistance() == 6);
   }
 
@@ -54,7 +53,7 @@ TEST_CASE("Count the minimal number of instructions to the final return "
     llvm::Instruction *last = &(function->front().back());
     REQUIRE(last);
 
-    DijSearcher s(&stratDistance, &stratTarget, last);
+    Dijkstra s(&stratDistance, &stratTarget, last);
     CHECK(s.searchForMinimalDistance() == 0);
   }
 }
@@ -68,14 +67,14 @@ TEST_CASE("Count the minimal number of instructions to the final return "
   FinalReturn stratTarget{};
 
   SUBCASE("Function call with no branching") {
-    DijSearcher s(&stratDistance, &stratTarget,
-                  getEntryPoint(module, "noBranchingCall"));
+    Dijkstra s(&stratDistance, &stratTarget,
+               getEntryPoint(module, "noBranchingCall"));
     CHECK(s.searchForMinimalDistance() == 7);
   }
 
   SUBCASE("Function call with some branching inside") {
-    DijSearcher s(&stratDistance, &stratTarget,
-                  getEntryPoint(module, "oneBranchingCall"));
+    Dijkstra s(&stratDistance, &stratTarget,
+               getEntryPoint(module, "oneBranchingCall"));
     CHECK(s.searchForMinimalDistance() == 9);
   }
 }
@@ -90,25 +89,25 @@ TEST_CASE("Count the minimal number of instructions to the final return "
     REQUIRE(module);
 
     SUBCASE("Simple recursion with fibonacci") {
-      DijSearcher s(&stratDistance, &stratTarget, getEntryPoint(module));
+      Dijkstra s(&stratDistance, &stratTarget, getEntryPoint(module));
       CHECK(s.searchForMinimalDistance() == 5);
     }
 
     SUBCASE("Simple recursion inside fibonacci") {
-      DijSearcher s(&stratDistance, &stratTarget, getEntryPoint(module, "fib"));
+      Dijkstra s(&stratDistance, &stratTarget, getEntryPoint(module, "fib"));
       CHECK(s.searchForMinimalDistance() == 3);
     }
   }
 
   SUBCASE("Bigger callstack with divisible") {
     auto module = getModuleFromIRFile("bin/examples/divisible.bc");
-    DijSearcher s(&stratDistance, &stratTarget, getEntryPoint(module));
+    Dijkstra s(&stratDistance, &stratTarget, getEntryPoint(module));
     CHECK(s.searchForMinimalDistance() == 20);
   }
 
   SUBCASE("Control Flow Graph cannot be sorted topologically") {
     auto module = getModuleFromIRFile("bin/examples/doomcircle.bc");
-    DijSearcher s(&stratDistance, &stratTarget, getEntryPoint(module));
+    Dijkstra s(&stratDistance, &stratTarget, getEntryPoint(module));
     CHECK(s.searchForMinimalDistance() == 12);
   }
 }
@@ -120,7 +119,7 @@ TEST_CASE("Count the minimal number of instructions to assert failure "
 
   CountInstructions stratDistance{};
   FailingAssert stratTarget{};
-  DijSearcher s(&stratDistance, &stratTarget, getEntryPoint(module));
+  Dijkstra s(&stratDistance, &stratTarget, getEntryPoint(module));
 
   CHECK(s.searchForMinimalDistance() == 4);
 }

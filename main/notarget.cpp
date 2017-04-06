@@ -1,4 +1,4 @@
-#include "./../include/DijSearcher.h"
+#include "./../include/Dijkstra.h"
 #include "./../include/StratDistance.h"
 #include "./../include/StratTarget.h"
 #include "./../include/helper.h"
@@ -55,7 +55,7 @@ int main(int argc, char **argv) {
   for (int i = 0; i < 5; i++) {
     CountInstructions stratDistance;
     NoTarget stratTarget;
-    DijSearcher s(&stratDistance, &stratTarget, &(entry->front().front()));
+    Dijkstra s(&stratDistance, &stratTarget, &(entry->front().front()));
 
     uint64_t start = getCurrentTimeInMilliSeconds();
     s.searchForMinimalDistance();

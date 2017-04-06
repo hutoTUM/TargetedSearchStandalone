@@ -1,4 +1,4 @@
-#include "./../include/DijSearcher.h"
+#include "./../include/Dijkstra.h"
 #include "./../include/StratDistance.h"
 #include "./../include/StratTarget.h"
 #include "./../include/helper.h"
@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
   if (TargetFunction.empty()) {
     CountInstructions stratDistance;
     FinalReturn stratTarget;
-    DijSearcher s(&stratDistance, &stratTarget, &(entry->front().front()));
+    Dijkstra s(&stratDistance, &stratTarget, &(entry->front().front()));
 
     llvm::outs() << "Minimal Instruction from " << EntryFunction
                  << " to final return: " << s.searchForMinimalDistance()
@@ -74,7 +74,7 @@ int main(int argc, char **argv) {
 
     CountDecisions stratDistance;
     CallToSpecificFunction stratTarget(TargetFunction);
-    DijSearcher s(&stratDistance, &stratTarget, &(entry->front().front()));
+    Dijkstra s(&stratDistance, &stratTarget, &(entry->front().front()));
 
     llvm::outs() << "Minimal Decisions from " << EntryFunction << " to call of "
                  << TargetFunction << ": " << s.searchForMinimalDistance()

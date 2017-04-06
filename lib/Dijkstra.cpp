@@ -1,5 +1,5 @@
-#include "./../include/DijSearcher.h"
-#include "./../include/DijSearchState.h"
+#include "./../include/Dijkstra.h"
+#include "./../include/DijkstraState.h"
 #include "./../include/helper.h"
 #if LLVM_VERSION_MAJOR < 3
 #include "llvm/BasicBlock.h"
@@ -19,35 +19,35 @@
 #include <deque>
 #include <list>
 
-DijSearcher::DijSearcher(StratDistance *stratDistance, StratTarget *stratTarget,
-                         llvm::Instruction *start) {
+Dijkstra::Dijkstra(StratDistance *stratDistance, StratTarget *stratTarget,
+                   llvm::Instruction *start) {
   // Store the strategyies
   this->stratDistance = stratDistance;
   this->stratTarget = stratTarget;
 
   // Add the start instruction to the search queue with 0 distance so far
-  addToSearchQueue(DijSearchState(start, 0));
+  addToSearchQueue(DijkstraState(start, 0));
 
   // Initialize the iteration counter
   this->iterationCounter = 0;
 }
 
-DijSearcher::DijSearcher(StratDistance *stratDistance, StratTarget *stratTarget,
-                         llvm::Instruction *start,
-                         std::list<llvm::Instruction *> stack) {
+Dijkstra::Dijkstra(StratDistance *stratDistance, StratTarget *stratTarget,
+                   llvm::Instruction *start,
+                   std::list<llvm::Instruction *> stack) {
   // Store the strategyies
   this->stratDistance = stratDistance;
   this->stratTarget = stratTarget;
 
   // Add the start instruction to the search queue with 0 distance so far
   // and everything that was stored on the stack so far
-  addToSearchQueue(DijSearchState(start, 0, stack));
+  addToSearchQueue(DijkstraState(start, 0, stack));
 
   // Initialize the iteration counter
   this->iterationCounter = 0;
 }
 
-uint DijSearcher::searchForMinimalDistance() {
+uint Dijkstra::searchForMinimalDistance() {
   while (!searchqueue.empty() &&
          searchqueue.top().distanceFromStart < maxDistance &&
          iterationCounter < maxIterations) {
@@ -62,28 +62,28 @@ uint DijSearcher::searchForMinimalDistance() {
   return -1;
 }
 
-void DijSearcher::addToSearchQueue(DijSearchState state) {
+void Dijkstra::addToSearchQueue(DijkstraState state) {
   if (!wasAddedEarlier(state) && searchqueue.size() <= maxQueueLength) {
     searchqueue.push(state);
     this->rememberAsAdded(state);
   }
 }
 
-void DijSearcher::enqueueInSearchQueue(DijSearchState oldState,
-                                       llvm::BasicBlock::iterator next,
-                                       std::deque<DijStackEntry> newStack) {
-  addToSearchQueue(DijSearchState(
+void Dijkstra::enqueueInSearchQueue(DijkstraState oldState,
+                                    llvm::BasicBlock::iterator next,
+                                    std::deque<DijkstraStackEntry> newStack) {
+  addToSearchQueue(DijkstraState(
       next, oldState.distanceFromStart + distanceToPass(&*oldState.instruction),
       newStack));
 }
 
-DijSearchState DijSearcher::popFromSeachQueue() {
-  DijSearchState result = searchqueue.top();
+DijkstraState Dijkstra::popFromSeachQueue() {
+  DijkstraState result = searchqueue.top();
   searchqueue.pop();
   return result;
 }
 
-bool DijSearcher::wasAddedEarlier(DijSearchState state) {
+bool Dijkstra::wasAddedEarlier(DijkstraState state) {
   // Only lookup states, that are the first in their basic block
   if (&(state.instruction->getParent()->front()) == &*state.instruction) {
     return duplicateFilter.count(
@@ -92,16 +92,16 @@ bool DijSearcher::wasAddedEarlier(DijSearchState state) {
   return false;
 }
 
-void DijSearcher::rememberAsAdded(DijSearchState state) {
+void Dijkstra::rememberAsAdded(DijkstraState state) {
   // Only store instructions, that are the first in their basic block
   if (&(state.instruction->getParent()->front()) == &*state.instruction) {
     duplicateFilter.insert(std::make_pair(&*state.instruction, state.stack));
   }
 }
 
-void DijSearcher::doSingleSearchIteration() {
+void Dijkstra::doSingleSearchIteration() {
   // Remove the first state from the queue
-  DijSearchState curr = this->popFromSeachQueue();
+  DijkstraState curr = this->popFromSeachQueue();
 
   // nullptr indicates an invalid instruction
   assert(&*curr.instruction != NULL);
@@ -115,7 +115,7 @@ void DijSearcher::doSingleSearchIteration() {
     // If the resolve was successfull
     if (succ != curr.instruction) {
       // Avoid recursions
-      DijStackEntry next(curr.instruction);
+      DijkstraStackEntry next(curr.instruction);
       if (!curr.doesIntroduceRecursion(next)) {
         // Add the current call instruction to the stack
         curr.stack.push_back(next);
@@ -134,7 +134,7 @@ void DijSearcher::doSingleSearchIteration() {
     // Check, if we have any point to return to
     if (!curr.stack.empty()) {
       // Extract the top stack frame
-      DijStackEntry gobackto = curr.stack.back();
+      DijkstraStackEntry gobackto = curr.stack.back();
       // and remove it from the stack
       curr.stack.pop_back();
 

@@ -1,7 +1,7 @@
-#ifndef DIJSEARCHER_H_
-#define DIJSEARCHER_H_
+#ifndef DIJKSTRA_H_
+#define DIJKSTRA_H_
 
-#include "./DijSearchState.h"
+#include "./DijkstraState.h"
 #include "./StratDistance.h"
 #include "./StratTarget.h"
 
@@ -23,17 +23,17 @@
  * instruction and to determine the target are virtual, so this is a base class
  * implementing the strategy for a lot of different search types.
  */
-class DijSearcher {
+class Dijkstra {
 private:
   StratDistance *stratDistance;
   StratTarget *stratTarget;
 
-  std::priority_queue<DijSearchState, std::vector<DijSearchState>,
-                      std::greater<DijSearchState> >
+  std::priority_queue<DijkstraState, std::vector<DijkstraState>,
+                      std::greater<DijkstraState> >
       searchqueue;
 
   // This data structure is ugly as hell, but is there any better way?
-  std::set<std::pair<llvm::Instruction *, std::deque<DijStackEntry> > >
+  std::set<std::pair<llvm::Instruction *, std::deque<DijkstraStackEntry> > >
       duplicateFilter;
 
   // Some variables to avoid extreme long search runs
@@ -44,30 +44,30 @@ private:
   /**
    * Add the state to search queue, if some sanity checks are passed
    */
-  void addToSearchQueue(DijSearchState state);
+  void addToSearchQueue(DijkstraState state);
 
   /**
    * Small helper function to add a new search state to the search queue. The
    * new distance is calculated internally.
    */
-  void enqueueInSearchQueue(DijSearchState oldState,
+  void enqueueInSearchQueue(DijkstraState oldState,
                             llvm::BasicBlock::iterator next,
-                            std::deque<DijStackEntry> newStack);
+                            std::deque<DijkstraStackEntry> newStack);
 
   /**
    * Get and remove the next entry from the search queue
    */
-  DijSearchState popFromSeachQueue();
+  DijkstraState popFromSeachQueue();
 
   /**
    * Check, if the given state was added earlier to the search queue
    */
-  bool wasAddedEarlier(DijSearchState state);
+  bool wasAddedEarlier(DijkstraState state);
 
   /**
    * Store a state for a later wasAddedEarlier check
    */
-  void rememberAsAdded(DijSearchState state);
+  void rememberAsAdded(DijkstraState state);
 
   /**
    * Do one step in the search. Select the next state and add all its
@@ -78,7 +78,7 @@ private:
   /**
    * Check, if the current state is the target of our search
    */
-  bool isTheTarget(DijSearchState state) {
+  bool isTheTarget(DijkstraState state) {
     return stratTarget->isTheTarget(state);
   };
 
@@ -93,10 +93,10 @@ private:
 public:
   uint iterationCounter;
 
-  DijSearcher(StratDistance *stratDistance, StratTarget *stratTarget,
-              llvm::Instruction *start);
-  DijSearcher(StratDistance *stratDistance, StratTarget *stratTarget,
-              llvm::Instruction *start, std::list<llvm::Instruction *> stack);
+  Dijkstra(StratDistance *stratDistance, StratTarget *stratTarget,
+           llvm::Instruction *start);
+  Dijkstra(StratDistance *stratDistance, StratTarget *stratTarget,
+           llvm::Instruction *start, std::list<llvm::Instruction *> stack);
 
   /**
    * Runs a search for the minimal distance to the target. If the target is
@@ -107,4 +107,4 @@ public:
 
 llvm::BasicBlock::iterator resolveCall(llvm::BasicBlock::iterator iterOnCall);
 
-#endif // DIJSEARCHER_H_
+#endif // DIJKSTRA_H_

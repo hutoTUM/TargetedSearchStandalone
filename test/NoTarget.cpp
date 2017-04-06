@@ -1,5 +1,5 @@
 #include "./../external/doctest.h"
-#include "./../include/DijSearcher.h"
+#include "./../include/Dijkstra.h"
 #include "./../include/StratDistance.h"
 #include "./../include/StratTarget.h"
 #include "./../include/helper.h"
@@ -21,7 +21,7 @@ uint getIterationsInSearch(llvm::StringRef filename,
 
   CountInstructions stratDistance{};
   NoTarget stratTarget{};
-  DijSearcher s(&stratDistance, &stratTarget, start);
+  Dijkstra s(&stratDistance, &stratTarget, start);
 
   s.searchForMinimalDistance();
 
