@@ -12,15 +12,11 @@
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/Module.h"
 #endif
+#include "llvm/Support/CommandLine.h"
 #include "llvm/Support/raw_ostream.h"
 #include <iostream>
 #include <stdint.h>
 #include <string>
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmisleading-indentation"
-#include "llvm/Support/CommandLine.h"
-#pragma GCC diagnostic pop
 
 llvm::cl::opt<std::string> BitcodeFilename(llvm::cl::Positional,
                                            llvm::cl::desc("<input.bc>"),

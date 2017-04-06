@@ -16,6 +16,6 @@ bool FinalReturn::isTheTarget(DijSearchState state) {
 }
 
 bool NoTarget::isTheTarget(DijSearchState state) {
-  // The searcher never finds his target
+  // The searcher never finds its target
   return false;
 }
