@@ -12,16 +12,19 @@
 
 class StratDistance {
 public:
+  virtual ~StratDistance(){/* empty */};
   virtual uint distanceToPass(llvm::Instruction *instr) = 0;
 };
 
 class CountInstructions : public StratDistance {
 public:
+  ~CountInstructions();
   uint distanceToPass(llvm::Instruction *instr);
 };
 
 class CountDecisions : public StratDistance {
 public:
+  ~CountDecisions();
   uint distanceToPass(llvm::Instruction *instr);
 };
 

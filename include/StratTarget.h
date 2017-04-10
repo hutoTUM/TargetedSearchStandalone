@@ -6,6 +6,7 @@
 
 class StratTarget {
 public:
+  virtual ~StratTarget(){/* empty */};
   virtual bool isTheTarget(DijkstraState state) = 0;
 };
 
@@ -14,6 +15,7 @@ public:
   llvm::StringRef targetFunctionName;
   explicit CallToSpecificFunction(llvm::StringRef _targetFunctionName)
       : targetFunctionName(_targetFunctionName){/* empty */};
+  ~CallToSpecificFunction();
   bool isTheTarget(DijkstraState state);
 };
 
@@ -22,21 +24,25 @@ public:
   llvm::StringRef targetFunctionName;
   explicit EndOfSpecificFunction(llvm::StringRef _targetFunctionName)
       : targetFunctionName(_targetFunctionName){/* empty */};
+  ~EndOfSpecificFunction();
   bool isTheTarget(DijkstraState state);
 };
 
 class FailingAssert : public StratTarget {
 public:
+  ~FailingAssert();
   bool isTheTarget(DijkstraState state);
 };
 
 class FinalReturn : public StratTarget {
 public:
+  ~FinalReturn();
   bool isTheTarget(DijkstraState state);
 };
 
 class NoTarget : public StratTarget {
 public:
+  ~NoTarget();
   bool isTheTarget(DijkstraState state);
 };
 

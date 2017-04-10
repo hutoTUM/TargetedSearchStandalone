@@ -7,11 +7,15 @@
 #include "llvm/IR/Instruction.h"
 #endif
 
+CountInstructions::~CountInstructions() { /* empty */
+}
 uint CountInstructions::distanceToPass(llvm::Instruction * /*instr*/) {
   // Basically everything encrease the distance by one
   return 1;
 }
 
+CountDecisions::~CountDecisions() { /* empty */
+}
 uint CountDecisions::distanceToPass(llvm::Instruction *instr) {
   // Check, if it is a terminator instruction
   if (llvm::isa<llvm::TerminatorInst>(instr)) {
